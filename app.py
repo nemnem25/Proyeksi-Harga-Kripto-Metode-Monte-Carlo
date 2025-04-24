@@ -28,12 +28,7 @@ if ticker_input:
             mu = float(log_returns.mean())
             sigma = float(log_returns.std())
 
-            last_price = float(close_prices.iloc[-1])
-            last_date = data.index[-1].date()
-            now_wib = datetime.now(pytz.timezone("Asia/Jakarta")).strftime("%H:%M:%S")
-
             st.success(f"✅ Rata-rata log returns harian: {mu:.5f}, Standar deviasi harian: {sigma:.5f}")
-            st.info(f"💰 Harga terakhir: US${last_price:,.2f} | 🗓️ Tanggal: {last_date.strftime('%d %B %Y')} | 🕒 Waktu (WIB): {now_wib}")
 
             for num_days in [7, 30, 90]:
                 st.divider()
