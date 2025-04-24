@@ -55,12 +55,11 @@ if ticker_input:
 
             # Tampilkan harga penutupan terakhir dan harga real-time
             st.info(
-                f"💰 Harga penutupan terakhir (Yahoo Finance): US${last_price:,.2f}  
-"
-                f"📅 Tanggal penutupan: {last_date.strftime('%d %B %Y')}  
-"
-                f"🕒 Waktu akses (WIB): {now_wib}"
-            )
+    f"""💰 Harga penutupan terakhir (Yahoo Finance): US${last_price:,.2f}  
+📅 Tanggal penutupan: {last_date.strftime('%d %B %Y')}  
+🕒 Waktu akses (WIB): {now_wib}"""
+)
+
             if coingecko_price:
                 st.success(f"⚡️ Harga real-time (CoinGecko): US${coingecko_price:,.2f}")
 
