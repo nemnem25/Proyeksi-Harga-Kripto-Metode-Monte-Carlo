@@ -1,3 +1,4 @@
+
 import streamlit as st
 import yfinance as yf
 import numpy as np
@@ -54,8 +55,10 @@ if ticker_input:
 
             # Tampilkan harga penutupan terakhir dan harga real-time
             st.info(
-                f"💰 Harga penutupan terakhir (Yahoo Finance): US${last_price:,.2f}  \n"
-                f"📅 Tanggal penutupan: {last_date.strftime('%d %B %Y')}  \n"
+                f"💰 Harga penutupan terakhir (Yahoo Finance): US${last_price:,.2f}  
+"
+                f"📅 Tanggal penutupan: {last_date.strftime('%d %B %Y')}  
+"
                 f"🕒 Waktu akses (WIB): {now_wib}"
             )
             if coingecko_price:
@@ -91,7 +94,7 @@ if ticker_input:
 
                 start_date = last_date
                 end_date = last_date + timedelta(days=num_days)
-		st.markdown(f"[PROYEKSI HARGA {ticker_input} {num_days} HARI KE DEPAN]")
+                st.markdown(f"[PROYEKSI HARGA {ticker_input} {num_days} HARI KE DEPAN]")
                 st.markdown(f"Tanggal awal: {start_date.strftime('%d %B %Y')}")
                 st.markdown(f"Tanggal akhir: {end_date.strftime('%d %B %Y')}")
                 st.code("\n".join(output), language="markdown")
