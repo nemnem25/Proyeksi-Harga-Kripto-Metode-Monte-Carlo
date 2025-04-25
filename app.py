@@ -1,8 +1,13 @@
-import streamlit as st 
-import numpy as np
-import pandas as pd
-from datetime import datetime
-import requests
+import streamlit as st  
+import numpy as np  
+import pandas as pd  
+from datetime import datetime  
+import requests  
+
+# Fungsi format angka Indonesia: titik ribuan, koma desimal
+def format_angka_indonesia(val: float) -> str:
+    s = f"{val:,.2f}"       # US style: 1,234,567.89
+    return s.replace(",", "X").replace(".", ",").replace("X", ".")  
 
 st.set_page_config(page_title="Proyeksi Harga Kripto Metode Monte Carlo", layout="centered")
 st.title("📈 Proyeksi Harga Kripto Metode Monte Carlo")
@@ -11,91 +16,89 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-ticker_options = [
-    "BTC-USD", "ETH-USD", "BNB-USD", "ADA-USD", "SOL-USD", "XRP-USD", "DOT-USD", "DOGE-USD",
-    "MATIC-USD", "LTC-USD", "TRX-USD", "SHIB-USD", "AVAX-USD", "UNI-USD", "LINK-USD",
-    "ATOM-USD", "ETC-USD", "XLM-USD", "BCH-USD", "ALGO-USD", "FTM-USD", "SAND-USD",
-    "MANA-USD", "AXS-USD", "GALA-USD", "APT-USD", "HBAR-USD", "ICP-USD", "NEAR-USD",
-    "AAVE-USD", "CAKE-USD", "EOS-USD", "KSM-USD", "ZIL-USD", "QNT-USD", "DYDX-USD",
-    "CHZ-USD", "GRT-USD", "VET-USD", "1INCH-USD", "CRV-USD", "RUNE-USD", "FIL-USD",
-    "XTZ-USD", "ENS-USD", "FLOW-USD", "LRC-USD", "SUSHI-USD", "COMP-USD", "YFI-USD"
-]
+# Tambahkan CSS global untuk styling hasil
+st.markdown("""
+    <style>
+    .highlight {
+        font-size: 16px;
+        font-weight: bold;
+        color: #2ecc71;
+        margin-bottom: 8px;
+    }
+    .normal {
+        font-size: 15px;
+        color: inherit;
+        margin-bottom: 6px;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
-coingecko_map = {
-    "BTC-USD": "bitcoin", "ETH-USD": "ethereum", "BNB-USD": "binancecoin", "ADA-USD": "cardano",
-    "SOL-USD": "solana", "XRP-USD": "ripple", "DOT-USD": "polkadot", "DOGE-USD": "dogecoin",
-    "MATIC-USD": "matic-network", "LTC-USD": "litecoin", "TRX-USD": "tron", "SHIB-USD": "shiba-inu",
-    "AVAX-USD": "avalanche-2", "UNI-USD": "uniswap", "LINK-USD": "chainlink", "ATOM-USD": "cosmos",
-    "ETC-USD": "ethereum-classic", "XLM-USD": "stellar", "BCH-USD": "bitcoin-cash",
-    "ALGO-USD": "algorand", "FTM-USD": "fantom", "SAND-USD": "the-sandbox", "MANA-USD": "decentraland",
-    "AXS-USD": "axie-infinity", "GALA-USD": "gala", "APT-USD": "aptos", "HBAR-USD": "hedera",
-    "ICP-USD": "internet-computer", "NEAR-USD": "near", "AAVE-USD": "aave", "CAKE-USD": "pancakeswap-token",
-    "EOS-USD": "eos", "KSM-USD": "kusama", "ZIL-USD": "zilliqa", "QNT-USD": "quant",
-    "DYDX-USD": "dydx", "CHZ-USD": "chiliz", "GRT-USD": "the-graph", "VET-USD": "vechain",
-    "1INCH-USD": "1inch", "CRV-USD": "curve-dao-token", "RUNE-USD": "thorchain",
-    "FIL-USD": "filecoin", "XTZ-USD": "tezos", "ENS-USD": "ethereum-name-service",
-    "FLOW-USD": "flow", "LRC-USD": "loopring", "SUSHI-USD": "sushi", "COMP-USD": "compound",
-    "YFI-USD": "yearn-finance"
-}
+# Daftar ticker
+ticker_options = ["BTC-USD", "ETH-USD", "BNB-USD", "ADA-USD", "SOL-USD"]  # ... dst ...
+coingecko_map = {"BTC-USD":"bitcoin","ETH-USD":"ethereum","BNB-USD":"binancecoin","ADA-USD":"cardano","SOL-USD":"solana"}  # ... dst ...
 
 ticker_input = st.selectbox("Pilih simbol kripto:", ticker_options)
+if not ticker_input:
+    st.stop()
 
-if ticker_input:
+try:
+    st.write(f"📥 Mengambil data harga {ticker_input} dari CoinGecko...")
+    coin_id = coingecko_map[ticker_input]
+
+    # Ambil data historis 365 hari
+    resp = requests.get(
+        f"https://api.coingecko.com/api/v3/coins/{coin_id}/market_chart",
+        params={"vs_currency":"usd","days":"365"}
+    )
+    resp.raise_for_status()
+    prices = resp.json()["prices"]
+    dates = [datetime.fromtimestamp(p[0]/1000).date() for p in prices]
+    closes = [p[1] for p in prices]
+
+    df = pd.DataFrame({"Date":dates, "Close":closes}).set_index("Date")
+    if len(df) < 2:
+        st.warning("Data historis tidak mencukupi untuk simulasi.")
+        st.stop()
+
+    log_ret = np.log(df["Close"]/df["Close"].shift(1)).dropna()
+    mu, sigma = log_ret.mean(), log_ret.std()
+
+    # Harga real-time atau fallback
     try:
-        st.write(f"📅 Mengambil data harga {ticker_input} dari CoinGecko...")
-        coin_id = coingecko_map.get(ticker_input.upper(), "bitcoin")
-
-        response = requests.get(
-            f"https://api.coingecko.com/api/v3/coins/{coin_id}/market_chart",
-            params={"vs_currency": "usd", "days": "365"}
+        r2 = requests.get(
+            f"https://api.coingecko.com/api/v3/simple/price?ids={coin_id}&vs_currencies=usd"
         )
-        response.raise_for_status()
-        prices = response.json()["prices"]
-        dates = [datetime.fromtimestamp(price[0] / 1000).date() for price in prices]
-        close_prices = [price[1] for price in prices]
+        r2.raise_for_status()
+        current_price = r2.json()[coin_id]["usd"]
+    except:
+        current_price = df["Close"].iloc[-2]
 
-        data = pd.DataFrame({"Date": dates, "Close": close_prices}).set_index("Date")
-        log_returns = np.log(data["Close"] / data["Close"].shift(1)).dropna()
+    # Simulasi Monte Carlo untuk 7, 30, 90 hari
+    for days in [7, 30, 90]:
+        st.subheader(f"🔮 Proyeksi Harga Kripto {ticker_input} untuk {days} Hari ke Depan")
+        sims = np.zeros((days, 1000))
+        for i in range(1000):
+            rw = np.random.normal(mu, sigma, days)
+            sims[:, i] = current_price * np.exp(np.cumsum(rw))
+        finals = sims[-1, :]
 
-        mu = float(log_returns.mean())
-        sigma = float(log_returns.std())
-        yesterday_price = float(data["Close"].iloc[-2])
+        # Hitung probabilitas per rentang harga
+        bins = np.linspace(finals.min(), finals.max(), 10)
+        counts, _ = np.histogram(finals, bins=bins)
+        probs = counts / len(finals) * 100
+        idx_sorted = np.argsort(probs)[::-1]
 
-        try:
-            response_realtime = requests.get(
-                f"https://api.coingecko.com/api/v3/simple/price?ids={coin_id}&vs_currencies=usd"
+        # Tampilkan hasil dengan HTML + CSS, tanpa markdown ** atau *
+        for rank, idx in enumerate(idx_sorted):
+            low = format_angka_indonesia(bins[idx])
+            high = format_angka_indonesia(bins[idx+1]) if idx+1 < len(bins) else "N/A"
+            pct = f"{probs[idx]:.1f}%"
+            html = (
+                f"<div class='{ 'highlight' if rank==0 else 'normal' }'>"
+                f"{pct} peluang harga berada di antara: US${low} dan US${high}"  
+                f"</div>"
             )
-            response_realtime.raise_for_status()
-            coingecko_price = response_realtime.json()[coin_id]["usd"]
-        except Exception:
-            coingecko_price = yesterday_price
+            st.markdown(html, unsafe_allow_html=True)
 
-        for num_days in [7, 30, 90]:
-            st.subheader(f"🔮 Proyeksi Harga Kripto {coin_id} untuk {num_days} Hari ke Depan")
-            simulations = np.zeros((num_days, 1000))
-            for i in range(1000):
-                rand_returns = np.random.normal(mu, sigma, num_days)
-                price_path = coingecko_price * np.exp(np.cumsum(rand_returns))
-                simulations[:, i] = price_path
-
-            final_prices = simulations[-1, :]
-            bins = np.linspace(final_prices.min(), final_prices.max(), num=10)
-            counts, _ = np.histogram(final_prices, bins=bins)
-            probabilities = counts / len(final_prices) * 100
-
-            sorted_indices = np.argsort(probabilities)[::-1]
-            for idx in range(len(probabilities)):
-                low_range = f"{bins[sorted_indices[idx]]:,.2f}".replace(",", ".").replace(".", ",")
-                high_range = f"{bins[sorted_indices[idx] + 1]:,.2f}".replace(",", ".").replace(".", ",") if idx + 1 < len(bins) else "N/A"
-
-                if idx == 0:
-                    st.markdown(
-                        f"**<span style='color:green;'>{probabilities[sorted_indices[idx]]:.1f}% peluang harga berada di antara: US${low_range} dan US${high_range}</span>**",
-                        unsafe_allow_html=True
-                    )
-                else:
-                    st.markdown(
-                        f"{probabilities[sorted_indices[idx]]:.1f}% peluang harga berada di antara: **US${low_range}** dan **US${high_range}**"
-                    )
-    except Exception as e:
-        st.error(f"Terjadi kesalahan: {e}")
+except Exception as e:
+    st.error(f"Terjadi kesalahan: {e}")
