@@ -17,7 +17,10 @@ ticker_input = st.selectbox(
     "Pilih simbol ticker cryptocurrency yang didukung:",
     ticker_options
 )
-st.caption("⚠️ Simbol ticker yang didukung: BTC-USD (Bitcoin), ETH-USD (Ethereum), BNB-USD (Binance Coin)")
+st.caption(
+    "⚠️ Harga ini berasal dari penutupan satu hari sebelumnya berdasarkan waktu Indonesia (WIB), "
+    "sedangkan waktu akses program mencerminkan waktu saat ini."
+)
 
 if ticker_input:
     try:
@@ -53,14 +56,29 @@ if ticker_input:
         # Tampilkan info statistik
         st.success(f"✅ Rata-rata log returns harian: {mu:.5f}, Standar deviasi harian: {sigma:.5f}")
 
-        # Tampilkan harga penutupan sehari sebelumnya
-        st.info(
-            f"""💰 Harga penutupan sehari sebelumnya (CoinGecko): US${yesterday_price:,.2f}  
-📅 Tanggal: {yesterday_date.strftime('%d %B %Y')}  
-🕒 Waktu akses (WIB): {now_wib}"""
-        )
+       # Tampilkan harga penutupan sehari sebelumnya
+st.info(
+    f"""💰 Harga penutupan sehari sebelumnya (CoinGecko): US${yesterday_price:,.2f}  
+📅 Tanggal harga penutupan: {yesterday_date.strftime('%d %B %Y')}  
+🕒 Waktu akses program (WIB): {now_wib}"""
+)
 
-        st.markdown("⚠️ Harga yang digunakan adalah harga penutupan satu hari sebelumnya dari sumber CoinGecko.")
+# Tampilkan informasi tanggal dengan subheader
+st.subheader("📅 Informasi Tanggal")
+st.markdown(
+    f"""
+    - **Harga berdasarkan tanggal penutupan:** {yesterday_date.strftime('%d %B %Y')}  
+    - **Waktu akses program:** {now_wib}
+    """
+)
+
+# Tampilkan keterangan tambahan jika perlu
+st.caption(
+    "⚠️ Harga berasal dari penutupan sehari sebelumnya berdasarkan waktu Indonesia (WIB), "
+    "sedangkan waktu akses program mencerminkan waktu saat ini."
+)
+
+# Simulasi Monte Carlo dimulai di bawah ini
 
         # Simulasi Monte Carlo
         start_price = yesterday_price
