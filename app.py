@@ -5,16 +5,28 @@ from datetime import datetime
 import requests  
 
 # Fungsi format angka Indonesia: titik ribuan, koma desimal
+# Fungsi format angka Indonesia: titik ribuan, koma desimal
 def format_angka_indonesia(val: float) -> str:
     s = f"{val:,.2f}"       # US style: 1,234,567.89
-    return s.replace(",", "X").replace(".", ",").replace("X", ".")  
+    return s.replace(",", "X").replace(".", ",").replace("X", ".")
 
-st.set_page_config(page_title="Proyeksi Harga Kripto Metode Monte Carlo", layout="centered")
-st.title("📈 Proyeksi Harga Kripto Metode Monte Carlo")
-st.markdown(
-    "_Simulasi berbasis data historis untuk memproyeksikan harga kripto selama beberapa hari ke depan. Simulasi menggunakan metode Monte Carlo. Harga yang digunakan adalah harga penutupan sehari sebelumnya dari CoinGecko._",
-    unsafe_allow_html=True
+# Fungsi format persen dengan koma desimal
+def format_persen_indonesia(val: float) -> str:
+    s = f"{val:.1f}"        # e.g. "24.7"
+    return s.replace(".", ",") + "%"
+
+# …di dalam loop tampilkan hasil:
+low = format_angka_indonesia(bins[idx])
+high = format_angka_indonesia(bins[idx+1]) if idx+1 < len(bins) else "N/A"
+pct = format_persen_indonesia(probs[idx])
+
+html = (
+    f"<div class='{ 'highlight' if rank==0 else 'normal' }'>"
+    f"{pct} peluang harga berada di antara: US${low} dan US${high}"
+    f"</div>"
 )
+st.markdown(html, unsafe_allow_html=True)
+
 
 # Tambahkan CSS global untuk styling hasil
 st.markdown("""
