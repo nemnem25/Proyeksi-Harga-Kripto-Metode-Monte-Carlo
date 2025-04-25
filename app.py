@@ -22,7 +22,8 @@ ticker_input = st.selectbox(
 if ticker_input:
     try:
         st.write(f"📥 Mengambil data harga {ticker_input} dari CoinGecko...")
-        
+
+        # Pemetaan simbol ticker ke CoinGecko ID
         coingecko_map = {
             "BTC-USD": "bitcoin",
             "ETH-USD": "ethereum",
@@ -40,6 +41,7 @@ if ticker_input:
         dates = [datetime.fromtimestamp(price[0] / 1000).date() for price in prices]
         close_prices = [price[1] for price in prices]
         
+        # Proses data menjadi DataFrame
         data = pd.DataFrame({"Date": dates, "Close": close_prices}).set_index("Date")
         log_returns = np.log(data["Close"] / data["Close"].shift(1)).dropna()
 
@@ -72,7 +74,6 @@ if ticker_input:
         except Exception as e:
             st.warning(f"Gagal mengambil harga real-time: {e}")
             start_price = yesterday_price  # Gunakan harga penutupan sehari sebelumnya
-        )
 
         # Simulasi Monte Carlo
         for num_days in [7, 30, 90]:
@@ -106,6 +107,5 @@ if ticker_input:
             st.markdown(f"Tanggal awal: {start_date.strftime('%d %B %Y')}")
             st.markdown(f"Tanggal akhir: {end_date.strftime('%d %B %Y')}")
             st.code("\n".join(output), language="markdown")
-
     except Exception as e:
         st.error(f"Terjadi kesalahan: {e}")
