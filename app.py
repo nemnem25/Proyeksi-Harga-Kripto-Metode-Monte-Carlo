@@ -1,7 +1,7 @@
-import streamlit as st
+import streamlit as st 
 import numpy as np
 import pandas as pd
-from datetime import datetime, timedelta
+from datetime import datetime
 import requests
 
 st.set_page_config(page_title="Proyeksi Harga Kripto Metode Monte Carlo", layout="centered")
@@ -11,7 +11,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Daftar simbol ticker yang didukung (50 cryptocurrency)
 ticker_options = [
     "BTC-USD", "ETH-USD", "BNB-USD", "ADA-USD", "SOL-USD", "XRP-USD", "DOT-USD", "DOGE-USD",
     "MATIC-USD", "LTC-USD", "TRX-USD", "SHIB-USD", "AVAX-USD", "UNI-USD", "LINK-USD",
@@ -22,7 +21,6 @@ ticker_options = [
     "XTZ-USD", "ENS-USD", "FLOW-USD", "LRC-USD", "SUSHI-USD", "COMP-USD", "YFI-USD"
 ]
 
-# Pemetaan simbol ticker ke CoinGecko ID
 coingecko_map = {
     "BTC-USD": "bitcoin", "ETH-USD": "ethereum", "BNB-USD": "binancecoin", "ADA-USD": "cardano",
     "SOL-USD": "solana", "XRP-USD": "ripple", "DOT-USD": "polkadot", "DOGE-USD": "dogecoin",
@@ -40,19 +38,13 @@ coingecko_map = {
     "YFI-USD": "yearn-finance"
 }
 
-# Dropdown untuk memilih simbol ticker
-ticker_input = st.selectbox(
-    "Pilih simbol kripto:",
-    ticker_options
-)
+ticker_input = st.selectbox("Pilih simbol kripto:", ticker_options)
 
 if ticker_input:
     try:
-        st.write(f"📥 Mengambil data harga {ticker_input} dari CoinGecko...")
-
+        st.write(f"📅 Mengambil data harga {ticker_input} dari CoinGecko...")
         coin_id = coingecko_map.get(ticker_input.upper(), "bitcoin")
 
-        # Ambil data harga historis
         response = requests.get(
             f"https://api.coingecko.com/api/v3/coins/{coin_id}/market_chart",
             params={"vs_currency": "usd", "days": "365"}
@@ -62,30 +54,25 @@ if ticker_input:
         dates = [datetime.fromtimestamp(price[0] / 1000).date() for price in prices]
         close_prices = [price[1] for price in prices]
 
-        # Proses data menjadi DataFrame
         data = pd.DataFrame({"Date": dates, "Close": close_prices}).set_index("Date")
         log_returns = np.log(data["Close"] / data["Close"].shift(1)).dropna()
 
         mu = float(log_returns.mean())
         sigma = float(log_returns.std())
+        yesterday_price = float(data["Close"].iloc[-2])
 
-        yesterday_price = float(data["Close"].iloc[-2])  # Harga penutupan sehari sebelumnya
-
-        # Harga real-time
         try:
             response_realtime = requests.get(
                 f"https://api.coingecko.com/api/v3/simple/price?ids={coin_id}&vs_currencies=usd"
             )
             response_realtime.raise_for_status()
             coingecko_price = response_realtime.json()[coin_id]["usd"]
-        except Exception as e:
-            coingecko_price = yesterday_price  # Fallback ke harga penutupan
+        except Exception:
+            coingecko_price = yesterday_price
 
-        # Simulasi Monte Carlo
         for num_days in [7, 30, 90]:
             st.subheader(f"🔮 Proyeksi Harga Kripto {coin_id} untuk {num_days} Hari ke Depan")
-
-            simulations = np.zeros((num_days, 1000))  # 1000 simulasi
+            simulations = np.zeros((num_days, 1000))
             for i in range(1000):
                 rand_returns = np.random.normal(mu, sigma, num_days)
                 price_path = coingecko_price * np.exp(np.cumsum(rand_returns))
@@ -96,13 +83,12 @@ if ticker_input:
             counts, _ = np.histogram(final_prices, bins=bins)
             probabilities = counts / len(final_prices) * 100
 
-            # Urutkan probabilitas dari yang terbesar ke terkecil
-            sorted_indices = np.argsort(probabilities)[::-1]  # Indeks terurut
+            sorted_indices = np.argsort(probabilities)[::-1]
             for idx in range(len(probabilities)):
                 low_range = f"{bins[sorted_indices[idx]]:,.2f}".replace(",", ".").replace(".", ",")
                 high_range = f"{bins[sorted_indices[idx] + 1]:,.2f}".replace(",", ".").replace(".", ",") if idx + 1 < len(bins) else "N/A"
 
-                if idx == 0:  # Probabilitas tertinggi di bagian atas, bold
+                if idx == 0:
                     st.markdown(
                         f"**<span style='color:green;'>{probabilities[sorted_indices[idx]]:.1f}% peluang harga berada di antara: US${low_range} dan US${high_range}</span>**",
                         unsafe_allow_html=True
