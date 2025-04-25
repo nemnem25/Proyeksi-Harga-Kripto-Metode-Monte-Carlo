@@ -7,7 +7,12 @@ import requests
 st.set_page_config(page_title="Simulasi Monte Carlo Kripto", layout="centered")
 st.title("📈 Simulasi Monte Carlo Harga Kripto")
 st.markdown(
-    "_Simulasi berbasis data historis untuk memproyeksikan harga kripto selama beberapa hari ke depan. Harga yang digunakan adalah harga penutupan sehari sebelumnya._",
+    f"""
+    <div style="font-family: Arial, sans-serif; font-size: 16px; color: black; background-color: #f0f9e8; padding: 10px; border-radius: 5px;">
+        💰 <b>Harga Penutupan Sehari Sebelumnya (CoinGecko):</b> US${yesterday_price:,.2f}<br>
+        ⚡️ <b>Harga Real-Time Saat Ini (CoinGecko):</b> US${coingecko_price:,.2f}
+    </div>
+    """,
     unsafe_allow_html=True
 )
 
