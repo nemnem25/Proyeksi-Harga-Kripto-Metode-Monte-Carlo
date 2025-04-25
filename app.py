@@ -40,7 +40,7 @@ def format_persen_indonesia(val: float) -> str:
 
 st.set_page_config(page_title="Proyeksi Harga Kripto Metode Monte Carlo", layout="centered")
 
-st.title("\📈 Proyeksi Harga Kripto Metode Monte Carlo")
+st.title("Proyeksi Harga Kripto Metode Monte Carlo")
 
 st.markdown(
 
