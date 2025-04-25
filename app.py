@@ -19,7 +19,7 @@ def format_persen_indonesia(val: float) -> str:
 # Konfigurasi halaman Streamlit
 # —————————————————————————
 st.set_page_config(page_title="Proyeksi Harga Kripto Metode Monte Carlo", layout="centered")
-st.title("\📈 Proyeksi Harga Kripto Metode Monte Carlo")
+st.title("📈 Proyeksi Harga Kripto Metode Monte Carlo")
 st.markdown(
     "_Simulasi berbasis data historis untuk memproyeksikan harga kripto selama beberapa hari ke depan. Simulasi menggunakan metode Monte Carlo. Harga yang digunakan adalah harga penutupan sehari sebelumnya dari CoinGecko._",
     unsafe_allow_html=True
