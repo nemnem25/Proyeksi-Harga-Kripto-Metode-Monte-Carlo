@@ -150,7 +150,7 @@ if not ticker_input:
 
 try:
 
-    st.write(f"\ud83d\udce5 Mengambil data harga {ticker_input} dari CoinGecko...")
+    st.write("Mengambil data harga {ticker_input} dari CoinGecko...")
 
     coin_id = coingecko_map[ticker_input]
 
@@ -210,7 +210,7 @@ try:
 
     for days in [7, 30, 90]:
 
-        st.subheader(f"\ud83d\udd2e Proyeksi Harga Kripto {ticker_input} untuk {days} Hari ke Depan")
+        st.subheader("Proyeksi Harga Kripto {ticker_input} untuk {days} Hari ke Depan")
 
         sims = np.zeros((days, 1000))
 
