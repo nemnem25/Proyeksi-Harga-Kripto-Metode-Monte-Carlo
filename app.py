@@ -8,17 +8,16 @@ import requests
 st.set_page_config(page_title="Simulasi Monte Carlo Kripto", layout="centered")
 st.title("📈 Simulasi Monte Carlo Harga Kripto")
 st.markdown(
-    "_Simulasi berbasis data historis untuk memproyeksikan harga cryptocurrency selama beberapa hari ke depan. Harga yang digunakan adalah harga penutupan sehari sebelumnya._",
+    "_Simulasi berbasis data historis untuk memproyeksikan harga kripto selama beberapa hari ke depan. Harga yang digunakan adalah harga penutupan sehari sebelumnya._",
     unsafe_allow_html=True
 )
 
 # Dropdown untuk memilih simbol ticker
 ticker_options = ["BTC-USD", "ETH-USD", "BNB-USD"]
 ticker_input = st.selectbox(
-    "Pilih simbol ticker cryptocurrency yang didukung:",
+    "Pilih simbol ticker kripto yang didukung:",
     ticker_options
 )
-st.caption("⚠️ Simbol ticker yang didukung: BTC-USD (Bitcoin), ETH-USD (Ethereum), BNB-USD (Binance Coin)")
 
 if ticker_input:
     try:
@@ -73,17 +72,6 @@ if ticker_input:
         except Exception as e:
             st.warning(f"Gagal mengambil harga real-time: {e}")
             start_price = yesterday_price  # Gunakan harga penutupan sehari sebelumnya
-
-        st.subheader("📅 Informasi Tanggal")
-        st.markdown(
-            f"""
-            - **Harga berdasarkan tanggal penutupan:** {yesterday_date.strftime('%d %B %Y')}  
-            - **Waktu akses program:** {now_wib}
-            """
-        )
-        st.caption(
-            "⚠️ Harga berasal dari penutupan sehari sebelumnya berdasarkan waktu Indonesia (WIB). "
-            "Informasi ini berbeda dengan waktu akses program."
         )
 
         # Simulasi Monte Carlo
@@ -110,7 +98,7 @@ if ticker_input:
                 f"{probabilities[i]:.1f}% chance price between {bin_labels[i]}"
                 for i in range(len(probabilities))
             ]
-            output[max_prob_index] = f"⬅️ [PROBABILITAS TERTINGGI] {probabilities[max_prob_index]:.1f}% chance price between {bin_labels[max_prob_index]}"
+            output[max_prob_index] = f"➲ [PROBABILITAS TERTINGGI] {probabilities[max_prob_index]:.1f}% chance price between {bin_labels[max_prob_index]}"
 
             start_date = yesterday_date
             end_date = yesterday_date + timedelta(days=num_days)
