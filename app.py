@@ -96,20 +96,19 @@ if ticker_input:
             counts, _ = np.histogram(final_prices, bins=bins)
             probabilities = counts / len(final_prices) * 100
 
-            # Urutkan probabilitas dari yang terbesar ke terkecil
-            sorted_indices = np.argsort(probabilities)[::-1]  # Indeks terurut
-            for idx in range(len(sorted_indices)):  # Validasi indeks untuk bins
-                low_range = f"{bins[sorted_indices[idx]]:,.2f}".replace(",", ".").replace(".", ",")
-                high_range = f"{bins[sorted_indices[idx] + 1]:,.2f}".replace(",", ".").replace(".", ",") if idx < len(sorted_indices) - 1 else "N/A"
+            # Pastikan indeks valid
+            for idx in range(len(probabilities)):  # Iterasi sesuai ukuran probabilities
+                low_range = f"{bins[idx]:,.2f}".replace(",", ".").replace(".", ",")
+                high_range = f"{bins[idx + 1]:,.2f}".replace(",", ".").replace(".", ",") if idx + 1 < len(bins) else "N/A"
 
                 if idx == 0:  # Probabilitas tertinggi diberi warna hijau
                     st.markdown(
-                        f"<span style='color:green; font-weight:bold;'>{probabilities[sorted_indices[idx]]:.1f}% peluang harga berada di antara: US${low_range} dan US${high_range}</span>",
+                        f"<span style='color:green; font-weight:bold;'>{probabilities[idx]:.1f}% peluang harga berada di antara: US${low_range} dan US${high_range}</span>",
                         unsafe_allow_html=True
                     )
                 else:
                     st.markdown(
-                        f"{probabilities[sorted_indices[idx]]:.1f}% peluang harga berada di antara: **US${low_range}** dan **US${high_range}**"
+                        f"{probabilities[idx]:.1f}% peluang harga berada di antara: **US${low_range}** dan **US${high_range}**"
                     )
     except Exception as e:
         st.error(f"Terjadi kesalahan: {e}")
