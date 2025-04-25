@@ -71,26 +71,25 @@ if ticker_input:
         sigma = float(log_returns.std())
 
         yesterday_price = float(data["Close"].iloc[-2])  # Harga penutupan sehari sebelumnya
-        yesterday_date = data.index[-2]  # Tanggal sehari sebelumnya
 
         # Gabungkan informasi harga penutupan dan harga real-time tanpa tanggal
-try:
-    response_realtime = requests.get(
-        f"https://api.coingecko.com/api/v3/simple/price?ids={coin_id}&vs_currencies=usd"
-    )
-    response_realtime.raise_for_status()
-    coingecko_price = response_realtime.json()[coin_id]["usd"]
-    st.success(
-        f"""💰 **Harga Penutupan Sehari Sebelumnya (CoinGecko):** US${yesterday_price:,.2f}  
+        try:
+            response_realtime = requests.get(
+                f"https://api.coingecko.com/api/v3/simple/price?ids={coin_id}&vs_currencies=usd"
+            )
+            response_realtime.raise_for_status()
+            coingecko_price = response_realtime.json()[coin_id]["usd"]
+            st.success(
+                f"""💰 **Harga Penutupan Sehari Sebelumnya (CoinGecko):** US${yesterday_price:,.2f}  
 ⚡️ **Harga Real-Time Saat Ini (CoinGecko):** US${coingecko_price:,.2f}"""
-    )
-    start_price = coingecko_price
-except Exception as e:
-    st.success(
-        f"""💰 **Harga Penutupan Sehari Sebelumnya (CoinGecko):** US${yesterday_price:,.2f}  
+            )
+            start_price = coingecko_price
+        except Exception as e:
+            st.success(
+                f"""💰 **Harga Penutupan Sehari Sebelumnya (CoinGecko):** US${yesterday_price:,.2f}  
 ⚠️ Gagal mengambil harga real-time: {e}"""
-    )
-    start_price = yesterday_price  # Fallback ke harga penutupan
+            )
+            start_price = yesterday_price  # Fallback ke harga penutupan
 
         # Simulasi Monte Carlo
         for num_days in [7, 30, 90]:
