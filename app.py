@@ -12,8 +12,36 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# Daftar simbol ticker yang didukung (50 cryptocurrency)
+ticker_options = [
+    "BTC-USD", "ETH-USD", "BNB-USD", "ADA-USD", "SOL-USD", "XRP-USD", "DOT-USD", "DOGE-USD",
+    "MATIC-USD", "LTC-USD", "TRX-USD", "SHIB-USD", "AVAX-USD", "UNI-USD", "LINK-USD",
+    "ATOM-USD", "ETC-USD", "XLM-USD", "BCH-USD", "ALGO-USD", "FTM-USD", "SAND-USD",
+    "MANA-USD", "AXS-USD", "GALA-USD", "APT-USD", "HBAR-USD", "ICP-USD", "NEAR-USD",
+    "AAVE-USD", "CAKE-USD", "EOS-USD", "KSM-USD", "ZIL-USD", "QNT-USD", "DYDX-USD",
+    "CHZ-USD", "GRT-USD", "VET-USD", "1INCH-USD", "CRV-USD", "RUNE-USD", "FIL-USD",
+    "XTZ-USD", "ENS-USD", "FLOW-USD", "LRC-USD", "SUSHI-USD", "COMP-USD", "YFI-USD"
+]
+
+# Pemetaan simbol ticker ke CoinGecko ID
+coingecko_map = {
+    "BTC-USD": "bitcoin", "ETH-USD": "ethereum", "BNB-USD": "binancecoin", "ADA-USD": "cardano",
+    "SOL-USD": "solana", "XRP-USD": "ripple", "DOT-USD": "polkadot", "DOGE-USD": "dogecoin",
+    "MATIC-USD": "matic-network", "LTC-USD": "litecoin", "TRX-USD": "tron", "SHIB-USD": "shiba-inu",
+    "AVAX-USD": "avalanche-2", "UNI-USD": "uniswap", "LINK-USD": "chainlink", "ATOM-USD": "cosmos",
+    "ETC-USD": "ethereum-classic", "XLM-USD": "stellar", "BCH-USD": "bitcoin-cash",
+    "ALGO-USD": "algorand", "FTM-USD": "fantom", "SAND-USD": "the-sandbox", "MANA-USD": "decentraland",
+    "AXS-USD": "axie-infinity", "GALA-USD": "gala", "APT-USD": "aptos", "HBAR-USD": "hedera",
+    "ICP-USD": "internet-computer", "NEAR-USD": "near", "AAVE-USD": "aave", "CAKE-USD": "pancakeswap-token",
+    "EOS-USD": "eos", "KSM-USD": "kusama", "ZIL-USD": "zilliqa", "QNT-USD": "quant",
+    "DYDX-USD": "dydx", "CHZ-USD": "chiliz", "GRT-USD": "the-graph", "VET-USD": "vechain",
+    "1INCH-USD": "1inch", "CRV-USD": "curve-dao-token", "RUNE-USD": "thorchain",
+    "FIL-USD": "filecoin", "XTZ-USD": "tezos", "ENS-USD": "ethereum-name-service",
+    "FLOW-USD": "flow", "LRC-USD": "loopring", "SUSHI-USD": "sushi", "COMP-USD": "compound",
+    "YFI-USD": "yearn-finance"
+}
+
 # Dropdown untuk memilih simbol ticker
-ticker_options = ["BTC-USD", "ETH-USD", "BNB-USD"]
 ticker_input = st.selectbox(
     "Pilih simbol ticker kripto yang didukung:",
     ticker_options
@@ -23,14 +51,8 @@ if ticker_input:
     try:
         st.write(f"📥 Mengambil data harga {ticker_input} dari CoinGecko...")
 
-        # Pemetaan simbol ticker ke CoinGecko ID
-        coingecko_map = {
-            "BTC-USD": "bitcoin",
-            "ETH-USD": "ethereum",
-            "BNB-USD": "binancecoin"
-        }
         coin_id = coingecko_map.get(ticker_input.upper(), "bitcoin")
-        
+
         # Ambil data harga historis (365 hari terakhir) dari CoinGecko
         response = requests.get(
             f"https://api.coingecko.com/api/v3/coins/{coin_id}/market_chart",
@@ -40,7 +62,7 @@ if ticker_input:
         prices = response.json()["prices"]
         dates = [datetime.fromtimestamp(price[0] / 1000).date() for price in prices]
         close_prices = [price[1] for price in prices]
-        
+
         # Proses data menjadi DataFrame
         data = pd.DataFrame({"Date": dates, "Close": close_prices}).set_index("Date")
         log_returns = np.log(data["Close"] / data["Close"].shift(1)).dropna()
@@ -50,15 +72,8 @@ if ticker_input:
 
         yesterday_price = float(data["Close"].iloc[-2])  # Harga penutupan sehari sebelumnya
         yesterday_date = data.index[-2]  # Tanggal sehari sebelumnya
-        now_wib = datetime.now(pytz.timezone("Asia/Jakarta")).strftime("%H:%M:%S")
 
-        # Tampilkan informasi harga penutupan sehari sebelumnya
-        st.info(
-            f"""💰 **Harga Penutupan Sehari Sebelumnya (CoinGecko):** US${yesterday_price:,.2f}  
-📅 **Tanggal Harga Penutupan:** {yesterday_date.strftime('%d %B %Y')}"""
-        )
-
-        # Tampilkan harga real-time jika tersedia
+        # Gabungkan informasi harga penutupan dan harga real-time
         try:
             response_realtime = requests.get(
                 f"https://api.coingecko.com/api/v3/simple/price?ids={coin_id}&vs_currencies=usd"
@@ -66,14 +81,19 @@ if ticker_input:
             response_realtime.raise_for_status()
             coingecko_price = response_realtime.json()[coin_id]["usd"]
             st.success(
-                f"""⚡️ **Harga Real-Time Saat Ini (CoinGecko):** US${coingecko_price:,.2f}  
+                f"""💰 **Harga Penutupan Sehari Sebelumnya (CoinGecko):** US${yesterday_price:,.2f}  
+⚡️ **Harga Real-Time Saat Ini (CoinGecko):** US${coingecko_price:,.2f}  
+📅 **Tanggal Harga Penutupan:** {yesterday_date.strftime('%d %B %Y')}  
 📅 **Tanggal Harga Real-Time:** {datetime.now().strftime('%d %B %Y')}"""
             )
-            # Gunakan harga real-time jika tersedia
             start_price = coingecko_price
         except Exception as e:
-            st.warning(f"Gagal mengambil harga real-time: {e}")
-            start_price = yesterday_price  # Gunakan harga penutupan sehari sebelumnya
+            st.success(
+                f"""💰 **Harga Penutupan Sehari Sebelumnya (CoinGecko):** US${yesterday_price:,.2f}  
+⚠️ Gagal mengambil harga real-time: {e}  
+📅 **Tanggal Harga Penutupan:** {yesterday_date.strftime('%d %B %Y')}"""
+            )
+            start_price = yesterday_price  # Fallback ke harga penutupan
 
         # Simulasi Monte Carlo
         for num_days in [7, 30, 90]:
@@ -101,11 +121,6 @@ if ticker_input:
             ]
             output[max_prob_index] = f"➲ [PROBABILITAS TERTINGGI] {probabilities[max_prob_index]:.1f}% chance price between {bin_labels[max_prob_index]}"
 
-            start_date = yesterday_date
-            end_date = yesterday_date + timedelta(days=num_days)
-            st.markdown(f"[PROYEKSI HARGA {ticker_input} {num_days} HARI KE DEPAN]")
-            st.markdown(f"Tanggal awal: {start_date.strftime('%d %B %Y')}")
-            st.markdown(f"Tanggal akhir: {end_date.strftime('%d %B %Y')}")
             st.code("\n".join(output), language="markdown")
     except Exception as e:
         st.error(f"Terjadi kesalahan: {e}")
