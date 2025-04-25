@@ -81,43 +81,39 @@ if ticker_input:
         except Exception as e:
             coingecko_price = yesterday_price  # Fallback ke harga penutupan
 
-        # Gabungkan informasi harga
-        st.markdown(
-            f"""
-            <div style="font-family: Arial, sans-serif; font-size: 16px; color: black; background-color: #f0f9e8; padding: 10px; border-radius: 5px;">
-                💰 <b>Harga Penutupan Sehari Sebelumnya (CoinGecko):</b> US${yesterday_price:,.2f}<br>
-                ⚡️ <b>Harga Real-Time Saat Ini (CoinGecko):</b> US${coingecko_price:,.2f}
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
         # Simulasi Monte Carlo
         for num_days in [7, 30, 90]:
-            st.divider()
-            st.subheader(f"🔮 Simulasi Monte Carlo untuk {num_days} hari ke depan")
+            st.subheader(f"🔮 Simulasi Monte Carlo untuk {num_days} Hari ke Depan")
 
-            num_simulations = 1000
-            simulations = np.zeros((num_days, num_simulations))
-
-            for i in range(num_simulations):
+            simulations = np.zeros((num_days, 1000))  # 1000 simulasi
+            for i in range(1000):
                 rand_returns = np.random.normal(mu, sigma, num_days)
                 price_path = coingecko_price * np.exp(np.cumsum(rand_returns))
                 simulations[:, i] = price_path
 
             final_prices = simulations[-1, :]
             bins = np.linspace(final_prices.min(), final_prices.max(), num=10)
-            bin_labels = [f"{bins[i]:,.2f} dan {bins[i+1]:,.2f}" for i in range(len(bins) - 1)]
             counts, _ = np.histogram(final_prices, bins=bins)
             probabilities = counts / len(final_prices) * 100
 
-            max_prob_index = np.argmax(probabilities)
-            output = [
-                f"{probabilities[i]:.1f}% chance price between {bin_labels[i]}"
-                for i in range(len(probabilities))
-            ]
-            output[max_prob_index] = f"➲ [PROBABILITAS TERTINGGI] {probabilities[max_prob_index]:.1f}% chance price between {bin_labels[max_prob_index]}"
+            # Urutkan probabilitas dari yang terbesar ke terkecil
+            sorted_indices = np.argsort(probabilities)[::-1]  # Indeks terurut
+            sorted_probabilities = probabilities[sorted_indices]
+            sorted_bins = bins[sorted_indices]
 
-            st.code("\n".join(output), language="markdown")
+            # Tampilkan hasil secara berurutan dengan penandaan warna hijau untuk probabilitas tertinggi
+            for idx, prob in enumerate(sorted_probabilities):
+                low_range = f"{sorted_bins[idx]:,.2f}".replace(",", ".").replace(".", ",")
+                high_range = f"{sorted_bins[idx + 1]:,.2f}".replace(",", ".").replace(".", ",")
+
+                if idx == 0:  # Probabilitas tertinggi diberi warna hijau
+                    st.markdown(
+                        f"<span style='color:green; font-weight:bold;'>{prob:.1f}% peluang harga berada di antara: US${low_range} dan US${high_range}</span>",
+                        unsafe_allow_html=True
+                    )
+                else:
+                    st.markdown(
+                        f"{prob:.1f}% peluang harga berada di antara: **US${low_range}** dan **US${high_range}**"
+                    )
     except Exception as e:
         st.error(f"Terjadi kesalahan: {e}")
