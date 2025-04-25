@@ -2,7 +2,6 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
-import pytz
 import requests
 
 st.set_page_config(page_title="Simulasi Monte Carlo Kripto", layout="centered")
@@ -72,7 +71,7 @@ if ticker_input:
 
         yesterday_price = float(data["Close"].iloc[-2])  # Harga penutupan sehari sebelumnya
 
-        # Gabungkan informasi harga penutupan dan harga real-time tanpa tanggal
+        # Gabungkan informasi harga penutupan dan harga real-time
         try:
             response_realtime = requests.get(
                 f"https://api.coingecko.com/api/v3/simple/price?ids={coin_id}&vs_currencies=usd"
