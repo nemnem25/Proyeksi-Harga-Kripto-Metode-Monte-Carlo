@@ -72,7 +72,7 @@ if ticker_input:
             start_price = coingecko_price
         except Exception as e:
             st.warning(f"Gagal mengambil harga real-time: {e}")
-            start_price = yesterday_price  # Default ke harga penutupan
+            start_price = yesterday_price  # Gunakan harga penutupan sehari sebelumnya
 
         st.subheader("📅 Informasi Tanggal")
         st.markdown(
