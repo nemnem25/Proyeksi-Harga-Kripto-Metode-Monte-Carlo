@@ -51,12 +51,29 @@ if ticker_input:
         yesterday_date = data.index[-2]  # Tanggal sehari sebelumnya
         now_wib = datetime.now(pytz.timezone("Asia/Jakarta")).strftime("%H:%M:%S")
 
-        # Tampilkan informasi harga dan tanggal
+        # Tampilkan informasi harga penutupan sehari sebelumnya
         st.info(
-            f"""💰 Harga penutupan sehari sebelumnya (CoinGecko): US${yesterday_price:,.2f}  
-📅 Tanggal harga penutupan: {yesterday_date.strftime('%d %B %Y')}  
-🕒 Waktu akses program (WIB): {now_wib}"""
+            f"""💰 **Harga Penutupan Sehari Sebelumnya (CoinGecko):** US${yesterday_price:,.2f}  
+📅 **Tanggal Harga Penutupan:** {yesterday_date.strftime('%d %B %Y')}"""
         )
+
+        # Tampilkan harga real-time jika tersedia
+        try:
+            response_realtime = requests.get(
+                f"https://api.coingecko.com/api/v3/simple/price?ids={coin_id}&vs_currencies=usd"
+            )
+            response_realtime.raise_for_status()
+            coingecko_price = response_realtime.json()[coin_id]["usd"]
+            st.success(
+                f"""⚡️ **Harga Real-Time Saat Ini (CoinGecko):** US${coingecko_price:,.2f}  
+📅 **Tanggal Harga Real-Time:** {datetime.now().strftime('%d %B %Y')}"""
+            )
+            # Gunakan harga real-time jika tersedia
+            start_price = coingecko_price
+        except Exception as e:
+            st.warning(f"Gagal mengambil harga real-time: {e}")
+            start_price = yesterday_price  # Default ke harga penutupan
+
         st.subheader("📅 Informasi Tanggal")
         st.markdown(
             f"""
@@ -65,13 +82,11 @@ if ticker_input:
             """
         )
         st.caption(
-            "⚠️ Harga berasal dari penutupan sehari sebelumnya berdasarkan waktu Indonesia (WIB), "
-            "sedangkan waktu akses program mencerminkan waktu saat ini."
+            "⚠️ Harga berasal dari penutupan sehari sebelumnya berdasarkan waktu Indonesia (WIB). "
+            "Informasi ini berbeda dengan waktu akses program."
         )
 
         # Simulasi Monte Carlo
-        start_price = yesterday_price
-
         for num_days in [7, 30, 90]:
             st.divider()
             st.subheader(f"🔮 Simulasi Monte Carlo untuk {num_days} hari ke depan")
