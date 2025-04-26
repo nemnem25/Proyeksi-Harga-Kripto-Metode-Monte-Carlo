@@ -50,18 +50,21 @@ st.markdown("""
         width: 100%;
         border-collapse: collapse;
     }
-    th, td {
+    th {
+        background-color: #5B5B5B;
+        font-weight: bold;
+        color: white;
+        padding: 6px;
+        text-align: left;
+        border: 1px solid white;
+    }
+    td {
         border: 1px solid white;
         padding: 6px;
         text-align: left;
     }
-    .highlight-grey {
-        background-color: #5B5B5B;
-        font-weight: normal;
-    }
     </style>
 """, unsafe_allow_html=True)
-
 
 # —————————————————————————
 # Daftar ticker dan mapping ke CoinGecko
