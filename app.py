@@ -222,6 +222,44 @@ try:
 
         st.markdown(stat_table_html, unsafe_allow_html=True)
 
+# Kalkulator Risiko
+try:
+    harga_sekarang = harga_awal  # diasumsikan harga awal simulasi = harga sekarang
+    harga_rata_rata = mean_hasil  # Mean dari hasil simulasi
+    peluang_naik = chance_above_mean / 100  # dijadikan desimal
+    peluang_turun = 1 - peluang_naik
+    std_dev = std_hasil
+
+    # Hitung Potential Gain dan Potential Loss
+    potential_gain = peluang_naik * max(harga_rata_rata - harga_sekarang, 0)
+    potential_loss = peluang_turun * max(harga_sekarang - (harga_sekarang - std_dev), 0)
+
+    # Hindari pembagian nol
+    if potential_loss != 0:
+        risk_reward_ratio = potential_gain / potential_loss
+    else:
+        risk_reward_ratio = float('inf')
+
+    # Format output supaya rapi
+    potential_gain_fmt = f"US${potential_gain:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    potential_loss_fmt = f"US${potential_loss:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    risk_reward_ratio_fmt = f"{risk_reward_ratio:.2f}"
+
+except Exception as e:
+    potential_gain_fmt = "Error"
+    potential_loss_fmt = "Error"
+    risk_reward_ratio_fmt = "Error"
+    print("Error saat menghitung Kalkulator Risiko:", e)
+
+# Tampilkan di Streamlit
+st.subheader("📈 Kalkulator Risiko")
+
+st.markdown(f"""
+**Potential Gain:** {potential_gain_fmt}  
+**Potential Loss:** {potential_loss_fmt}  
+**Risk-Reward Ratio:** {risk_reward_ratio_fmt}
+""")
+
 except Exception as e:
     st.error(f"Terjadi kesalahan: {e}")
 
