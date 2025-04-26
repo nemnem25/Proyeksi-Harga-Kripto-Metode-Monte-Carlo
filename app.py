@@ -28,7 +28,7 @@ st.set_page_config(page_title="Proyeksi Harga Kripto Metode Monte Carlo", layout
 # Tampilkan waktu realtime di atas
 waktu_sekarang = datetime.now().strftime("%A, %d %B %Y")
 st.markdown(f"""
-<div style='background-color: #f1f8e9; padding: 8px; border-radius: 8px; text-align: center; font-weight: bold; font-size: 16px;'>
+<div style='background-color: #93C47D; padding: 8px; border-radius: 8px; text-align: center; font-weight: bold; font-size: 16px;'>
 ⏰ {waktu_sekarang}
 </div>
 """, unsafe_allow_html=True)
@@ -55,7 +55,7 @@ st.markdown("""
         text-align: center;
     }
     .highlight-green {
-        background-color: #38761D;
+        background-color: #93C47D;
         font-weight: bold;
     }
     </style>
