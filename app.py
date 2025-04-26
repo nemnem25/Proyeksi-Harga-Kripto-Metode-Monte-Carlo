@@ -107,6 +107,7 @@ if not ticker_input:
 # ————————————————————
 
 try:
+    # Logika simulasi dan perhitungan lainnya
     coin_id = coingecko_map[ticker_input]
 
     resp = requests.get(
@@ -201,27 +202,26 @@ try:
         skewness_fmt = format_angka_indonesia(skewness)
 
         # Tambahkan tabel statistik dan kesimpulan
-stat_table_html = f"""
-<br>
-<table>
-<thead><tr><th>Statistik</th><th>Nilai</th></tr></thead><tbody>
-<tr><td>Mean (Harga Logaritmik)</td><td>{mean_log_fmt}</td></tr>
-<tr><td>Harga Berdasarkan Mean</td><td>US${harga_mean_fmt}</td></tr>
-<tr><td>Chance Above Mean</td><td>{chance_above_mean_fmt}</td></tr>
-<tr><td>Standard Deviation</td><td>US${std_dev_fmt}</td></tr>
-<tr><td>Skewness</td><td>{skewness_fmt}</td></tr>
-<tr class="highlight-grey">
-    <td colspan="2">
-        <strong>Kesimpulan:</strong><br>
-        Berdasarkan hasil simulasi, harga kripto diperkirakan berada dalam kisaran yang cukup stabil, dengan harga logaritmik rata-rata (mean) sebesar <strong>US${harga_mean_fmt}</strong>. Ini menunjukkan potensi pergerakan harga mendekati angka ini dalam beberapa waktu ke depan. Dengan kemungkinan <strong>{chance_above_mean_fmt}</strong> harga akan berada di atas harga rata-rata, peluang untuk harga naik cukup signifikan. Meskipun begitu, fluktuasi harga masih tinggi, tercermin dari <strong>Standard Deviation</strong> sebesar <strong>US${std_dev_fmt}</strong>, yang menunjukkan adanya kemungkinan fluktuasi harga yang cukup lebar. Selain itu, distribusi harga yang sedikit condong ke kiri (<strong>Skewness</strong> <strong>{skewness_fmt}</strong>) menandakan adanya kecenderungan harga bergerak turun lebih sering dibandingkan naik.
-    </td>
-</tr>
-</tbody></table>
-"""
+        stat_table_html = f"""
+        <br>
+        <table>
+        <thead><tr><th>Statistik</th><th>Nilai</th></tr></thead><tbody>
+        <tr><td>Mean (Harga Logaritmik)</td><td>{mean_log_fmt}</td></tr>
+        <tr><td>Harga Berdasarkan Mean</td><td>US${harga_mean_fmt}</td></tr>
+        <tr><td>Chance Above Mean</td><td>{chance_above_mean_fmt}</td></tr>
+        <tr><td>Standard Deviation</td><td>US${std_dev_fmt}</td></tr>
+        <tr><td>Skewness</td><td>{skewness_fmt}</td></tr>
+        <tr class="highlight-grey">
+            <td colspan="2">
+                <strong>Kesimpulan:</strong><br>
+                Berdasarkan hasil simulasi, harga kripto diperkirakan berada dalam kisaran yang cukup stabil, dengan harga logaritmik rata-rata (mean) sebesar <strong>US${harga_mean_fmt}</strong>. Ini menunjukkan potensi pergerakan harga mendekati angka ini dalam beberapa waktu ke depan. Dengan kemungkinan <strong>{chance_above_mean_fmt}</strong> harga akan berada di atas harga rata-rata, peluang untuk harga naik cukup signifikan. Meskipun begitu, fluktuasi harga masih tinggi, tercermin dari <strong>Standard Deviation</strong> sebesar <strong>US${std_dev_fmt}</strong>, yang menunjukkan adanya kemungkinan fluktuasi harga yang cukup lebar. Selain itu, distribusi harga yang sedikit condong ke kiri (<strong>Skewness</strong> <strong>{skewness_fmt}</strong>) menandakan adanya kecenderungan harga bergerak turun lebih sering dibandingkan naik.
+            </td>
+        </tr>
+        </tbody></table>
+        """
 
-st.markdown(stat_table_html, unsafe_allow_html=True)
-
-
+        st.markdown(stat_table_html, unsafe_allow_html=True)
 
 except Exception as e:
     st.error(f"Terjadi kesalahan: {e}")
+
