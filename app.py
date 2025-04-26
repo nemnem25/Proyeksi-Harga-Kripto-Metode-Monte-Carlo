@@ -210,7 +210,6 @@ try:
         <tr><td>Chance Above Mean</td><td>{chance_above_mean_fmt}</td></tr>
         <tr><td>Standard Deviation</td><td>US${std_dev_fmt}</td></tr>
         <tr><td>Skewness</td><td>{skewness_fmt}</td></tr>
-        <tr><td>Rentang Harga (Kumulatif Tertinggi)</td><td>US${rentang_bawah_fmt} - US${rentang_atas_fmt}</td></tr>
         </tbody></table>
         """
 
