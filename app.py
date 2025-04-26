@@ -52,10 +52,10 @@ st.markdown("""
     th, td {
         border: 1px solid white;
         padding: 6px;
-        text-align: center;
+        text-align: left;
     }
     .highlight-green {
-        background-color: #93C47D;
+        background-color: #6AA84F;
         font-weight: bold;
     }
     </style>
