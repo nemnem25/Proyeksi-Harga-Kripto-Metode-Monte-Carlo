@@ -1,9 +1,7 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
-from datetime import datetime, timedelta
-import pytz
-import time
+from datetime import datetime
 import requests
 
 # ————————————————————
@@ -142,7 +140,7 @@ try:
         
         st.subheader(f"Proyeksi untuk {days} hari")
         st.write(f"**Simulasi selesai! Rentang harga akhir: {format_angka_indonesia(finals.min())} - {format_angka_indonesia(finals.max())}**")
-    
+
     # Kesimpulan
     rentang_bawah = finals.min()
     rentang_atas = finals.max()
@@ -157,6 +155,9 @@ try:
         </div>
     """
     st.markdown(kesimpulan_html, unsafe_allow_html=True)
+
+except Exception as e:
+    st.error(f"Terjadi kesalahan: {e}")
 
 # Penjelasan Statistik Lengkap
 def buat_tabel_penjelasan_statistik():
