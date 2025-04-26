@@ -52,11 +52,6 @@ st.markdown("""
     td {
         font-family: 'Verdana', sans-serif;
     }
-    .highlight-green {
-        background-color: #5B5B5B;
-        font-weight: bold;
-        font-size: 15px;
-    }
     table {
         width: 100%;
         border-collapse: collapse;
@@ -66,6 +61,17 @@ st.markdown("""
         border: 1px solid #ddd;
         padding: 8px;
         text-align: left;
+    }
+    .kesimpulan {
+        font-family: 'Arial', sans-serif;
+        font-size: 15px;
+        line-height: 1.8;
+        text-align: justify;
+        color: #f0f0f0;
+        margin-top: 20px;
+        padding: 10px;
+        background-color: #424242;
+        border-radius: 8px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -85,101 +91,89 @@ st.markdown(
 )
 
 # ————————————————————
-# CSS global untuk styling hasil
-# ————————————————————
-
-st.markdown("""
-    <style>
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    th, td {
-        border: 1px solid white;
-        padding: 6px;
-        text-align: left;
-    }
-    .highlight-green {
-        background-color: #5B5B5B;
-        font-weight: bold;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
-# ————————————————————
 # Daftar ticker dan mapping ke CoinGecko
 # ————————————————————
 
-ticker_options = ["BTC-USD", "ETH-USD", "BNB-USD", "USDT-USD", "SOL-USD", "XRP-USD", "TON-USD", "DOGE-USD",
-    "ADA-USD", "AVAX-USD", "SHIB-USD", "WETH-USD", "DOT-USD", "TRX-USD", "WBTC-USD", "LINK-USD",
-    "MATIC-USD", "ICP-USD", "LTC-USD", "BCH-USD", "NEAR-USD", "UNI-USD", "PEPE-USD", "LEO-USD",
-    "DAI-USD", "APT-USD", "STETH-USD", "XLM-USD", "OKB-USD", "ETC-USD", "CRO-USD", "FIL-USD",
-    "RNDR-USD", "ATOM-USD", "HBAR-USD", "KAS-USD", "IMX-USD", "TAO-USD", "VET-USD", "MNT-USD",
-    "FET-USD", "LDO-USD", "TONCOIN-USD", "AR-USD", "INJ-USD", "GRT-USD", "BTCB-USD", "USDC-USD",
-    "SUI-USD", "BGB-USD", "XTZ-USD"]
-
+ticker_options = ["BTC-USD", "ETH-USD", "BNB-USD", "USDT-USD", "SOL-USD", "XRP-USD", "DOGE-USD", "ADA-USD", "SHIB-USD"]
 coingecko_map = {
-    "BTC-USD":"bitcoin", "ETH-USD":"ethereum", "BNB-USD":"binancecoin", "USDT-USD":"tether", "SOL-USD":"solana",
-    "XRP-USD":"ripple", "TON-USD":"toncoin", "DOGE-USD":"dogecoin", "ADA-USD":"cardano", "AVAX-USD":"avalanche-2",
-    "SHIB-USD":"shiba-inu", "WETH-USD":"weth", "DOT-USD":"polkadot", "TRX-USD":"tron", "WBTC-USD":"wrapped-bitcoin",
-    "LINK-USD":"chainlink", "MATIC-USD":"matic-network", "ICP-USD":"internet-computer", "LTC-USD":"litecoin",
-    "BCH-USD":"bitcoin-cash", "NEAR-USD":"near", "UNI-USD":"uniswap", "PEPE-USD":"pepe", "LEO-USD":"leo-token",
-    "DAI-USD":"dai", "APT-USD":"aptos", "STETH-USD":"staked-ether", "XLM-USD":"stellar", "OKB-USD":"okb",
-    "ETC-USD":"ethereum-classic", "CRO-USD":"crypto-com-chain", "FIL-USD":"filecoin", "RNDR-USD":"render-token",
-    "ATOM-USD":"cosmos", "HBAR-USD":"hedera-hashgraph", "KAS-USD":"kaspa", "IMX-USD":"immutable-x",
-    "TAO-USD":"bittensor", "VET-USD":"vechain", "MNT-USD":"mantle", "FET-USD":"fetch-ai", "LDO-USD":"lido-dao",
-    "TONCOIN-USD":"toncoin", "AR-USD":"arweave", "INJ-USD":"injective-protocol", "GRT-USD":"the-graph",
-    "BTCB-USD":"bitcoin-bep2", "USDC-USD":"usd-coin", "SUI-USD":"sui", "BGB-USD":"bitget-token", "XTZ-USD":"tezos"
+    "BTC-USD": "bitcoin", "ETH-USD": "ethereum", "BNB-USD": "binancecoin", "USDT-USD": "tether",
+    "SOL-USD": "solana", "XRP-USD": "ripple", "DOGE-USD": "dogecoin", "ADA-USD": "cardano", "SHIB-USD": "shiba-inu"
 }
 
-# ————————————————————
 # Input pengguna
-# ————————————————————
-
 ticker_input = st.selectbox("Pilih simbol kripto:", ticker_options)
 if not ticker_input:
     st.stop()
 
-# ————————————————————
 # Logika simulasi
-# ————————————————————
-
 try:
     coin_id = coingecko_map[ticker_input]
-
-    resp = requests.get(
-        f"https://api.coingecko.com/api/v3/coins/{coin_id}/market_chart",
-        params={"vs_currency":"usd","days":"365"}
-    )
+    resp = requests.get(f"https://api.coingecko.com/api/v3/coins/{coin_id}/market_chart", params={"vs_currency": "usd", "days": "365"})
     resp.raise_for_status()
     prices = resp.json()["prices"]
     dates = [datetime.fromtimestamp(p[0]/1000).date() for p in prices]
     closes = [p[1] for p in prices]
-
-    df = pd.DataFrame({"Date":dates, "Close":closes}).set_index("Date")
+    
+    df = pd.DataFrame({"Date": dates, "Close": closes}).set_index("Date")
     if len(df) < 2:
         st.warning("Data historis tidak mencukupi untuk simulasi.")
         st.stop()
-
+    
     log_ret = np.log(df["Close"]/df["Close"].shift(1)).dropna()
     mu, sigma = log_ret.mean(), log_ret.std()
-
+    
     try:
-        r2 = requests.get(
-            f"https://api.coingecko.com/api/v3/simple/price?ids={coin_id}&vs_currencies=usd"
-        )
+        r2 = requests.get(f"https://api.coingecko.com/api/v3/simple/price?ids={coin_id}&vs_currencies=usd")
         r2.raise_for_status()
         current_price = r2.json()[coin_id]["usd"]
     except:
         current_price = df["Close"].iloc[-2]
-
-    harga_penutupan = format_angka_indonesia(current_price)
-    st.write(f"**Harga penutupan {ticker_input} terakhir: US${harga_penutupan}**")
-
+    
     for days in [7, 30, 90]:
-        st.subheader(f"Proyeksi Harga Kripto {ticker_input} untuk {days} Hari ke Depan")
         sims = np.zeros((days, 1000))
         for i in range(1000):
             rw = np.random.normal(mu, sigma, days)
             sims[:, i] = current_price * np.exp(np.cumsum(rw))
-        finals = sims[-1, :
+        finals = sims[-1, :]
+        
+        bins = np.linspace(finals.min(), finals.max(), 10)
+        counts, _ = np.histogram(finals, bins=bins)
+        probs = counts / len(finals) * 100
+        
+        st.subheader(f"Proyeksi untuk {days} hari")
+        st.write(f"**Simulasi selesai! Rentang harga akhir: {format_angka_indonesia(finals.min())} - {format_angka_indonesia(finals.max())}**")
+    
+    # Kesimpulan
+    rentang_bawah = finals.min()
+    rentang_atas = finals.max()
+    total_peluang = sum(probs[:3])
+    skewness = (np.sum((finals - finals.mean()) ** 3) / len(finals)) / (finals.std() ** 3)
+    
+    kesimpulan_html = f"""
+        <div class="kesimpulan">
+            <b>Kesimpulan:</b> <br>
+            Dari hasil simulasi, diperkirakan harga akan berada dalam kisaran <b>US${format_angka_indonesia(rentang_bawah)}</b> hingga <b>US${format_angka_indonesia(rentang_atas)}</b> dengan peluang kumulatif sebesar <b>{format_persen_indonesia(total_peluang)}</b>. <br>
+            Skewness positif sebesar <b>{skewness:.3f}</b> menunjukkan bahwa harga lebih condong untuk bergerak naik, meskipun fluktuasi tajam tidak diharapkan dalam waktu dekat.
+        </div>
+    """
+    st.markdown(kesimpulan_html, unsafe_allow_html=True)
+
+# Penjelasan Statistik Lengkap
+def buat_tabel_penjelasan_statistik():
+    tabel_html = """
+        <table>
+            <thead><tr><th>Statistik</th><th>Penjelasan</th></tr></thead>
+            <tbody>
+                <tr><td>Mean (Harga Logaritmik)</td><td>Rata-rata perubahan harga dalam bentuk logaritmik, menggambarkan tren harga secara umum dalam jangka waktu tertentu.</td></tr>
+                <tr><td>Harga Berdasarkan Mean</td><td>Perkiraan harga berdasarkan rata-rata logaritmik, memberikan titik acuan harga yang lebih stabil.</td></tr>
+                <tr><td>Chance Above Mean</td><td>Probabilitas harga bergerak lebih tinggi dari rata-rata historis.</td></tr>
+                <tr><td>Standard Deviation</td><td>Ukuran volatilitas, menunjukkan seberapa besar fluktuasi harga dari rata-rata.</td></tr>
+                <tr><td>Skewness</td><td>Mengukur kecenderungan pergerakan harga; nilai positif menunjukkan kecenderungan naik.</td></tr>
+                <tr><td>Rentang Harga (Kumulatif Tertinggi)</td><td>Kisaran harga yang memiliki peluang tertinggi dalam simulasi, bersama dengan persentase kumulatif.</td></tr>
+            </tbody>
+        </table>
+    """
+    st.markdown(tabel_html, unsafe_allow_html=True)
+
+# Panggilan fungsi untuk tabel penjelasan
+buat_tabel_penjelasan_statistik()
