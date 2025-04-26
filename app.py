@@ -250,8 +250,6 @@ except Exception as e:
     potential_loss_fmt = "Error"
     risk_reward_ratio_fmt = "Error"
     print("Error saat menghitung Kalkulator Risiko:", e)
-
-
-except Exception as e:
     st.error(f"Terjadi kesalahan: {e}")
+
 
