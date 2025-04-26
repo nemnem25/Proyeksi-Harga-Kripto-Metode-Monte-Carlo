@@ -6,9 +6,9 @@ import pytz
 import time
 import requests
 
-# ———————————————————— 
+# ————————————————————
 # Fungsi utility: format angka & persen Indonesia
-# ———————————————————— 
+# ————————————————————
 
 def format_angka_indonesia(val: float) -> str:
     s = f"{val:,.0f}"  # <-- sekarang tanpa desimal
@@ -18,11 +18,57 @@ def format_persen_indonesia(val: float) -> str:
     s = f"{val:.1f}"
     return s.replace(".", ",") + "%"
 
-# ———————————————————— 
-# Konfigurasi halaman Streamlit 
-# ———————————————————— 
+# ————————————————————
+# Konfigurasi halaman Streamlit
+# ————————————————————
 
 st.set_page_config(page_title="Proyeksi Harga Kripto Metode Monte Carlo", layout="centered")
+
+# CSS Global untuk Tampilan Font Rapi
+st.markdown("""
+    <style>
+    body {
+        font-family: 'Arial', sans-serif;
+        font-size: 16px;
+        line-height: 1.6;
+        color: #f0f0f0;
+    }
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Helvetica', sans-serif;
+        font-weight: bold;
+        color: #f9a825;
+    }
+    p {
+        font-family: 'Arial', sans-serif;
+        font-size: 15px;
+        margin-bottom: 10px;
+        text-align: justify;
+    }
+    th {
+        background-color: #424242;
+        color: #fff;
+        font-family: 'Verdana', sans-serif;
+    }
+    td {
+        font-family: 'Verdana', sans-serif;
+    }
+    .highlight-green {
+        background-color: #5B5B5B;
+        font-weight: bold;
+        font-size: 15px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 # Tampilkan waktu realtime di atas
 waktu_sekarang = datetime.now().strftime("%A, %d %B %Y")
@@ -38,9 +84,9 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# ———————————————————— 
-# CSS global untuk styling hasil 
-# ———————————————————— 
+# ————————————————————
+# CSS global untuk styling hasil
+# ————————————————————
 
 st.markdown("""
     <style>
@@ -60,19 +106,17 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# ———————————————————— 
-# Daftar ticker dan mapping ke CoinGecko 
-# ———————————————————— 
+# ————————————————————
+# Daftar ticker dan mapping ke CoinGecko
+# ————————————————————
 
-ticker_options = [
-    "BTC-USD", "ETH-USD", "BNB-USD", "USDT-USD", "SOL-USD", "XRP-USD", "TON-USD", "DOGE-USD",
+ticker_options = ["BTC-USD", "ETH-USD", "BNB-USD", "USDT-USD", "SOL-USD", "XRP-USD", "TON-USD", "DOGE-USD",
     "ADA-USD", "AVAX-USD", "SHIB-USD", "WETH-USD", "DOT-USD", "TRX-USD", "WBTC-USD", "LINK-USD",
     "MATIC-USD", "ICP-USD", "LTC-USD", "BCH-USD", "NEAR-USD", "UNI-USD", "PEPE-USD", "LEO-USD",
     "DAI-USD", "APT-USD", "STETH-USD", "XLM-USD", "OKB-USD", "ETC-USD", "CRO-USD", "FIL-USD",
     "RNDR-USD", "ATOM-USD", "HBAR-USD", "KAS-USD", "IMX-USD", "TAO-USD", "VET-USD", "MNT-USD",
     "FET-USD", "LDO-USD", "TONCOIN-USD", "AR-USD", "INJ-USD", "GRT-USD", "BTCB-USD", "USDC-USD",
-    "SUI-USD", "BGB-USD", "XTZ-USD"
-]
+    "SUI-USD", "BGB-USD", "XTZ-USD"]
 
 coingecko_map = {
     "BTC-USD":"bitcoin", "ETH-USD":"ethereum", "BNB-USD":"binancecoin", "USDT-USD":"tether", "SOL-USD":"solana",
@@ -88,17 +132,17 @@ coingecko_map = {
     "BTCB-USD":"bitcoin-bep2", "USDC-USD":"usd-coin", "SUI-USD":"sui", "BGB-USD":"bitget-token", "XTZ-USD":"tezos"
 }
 
-# ———————————————————— 
-# Input pengguna 
-# ———————————————————— 
+# ————————————————————
+# Input pengguna
+# ————————————————————
 
 ticker_input = st.selectbox("Pilih simbol kripto:", ticker_options)
 if not ticker_input:
     st.stop()
 
-# ———————————————————— 
-# Logika simulasi 
-# ———————————————————— 
+# ————————————————————
+# Logika simulasi
+# ————————————————————
 
 try:
     coin_id = coingecko_map[ticker_input]
@@ -138,91 +182,4 @@ try:
         for i in range(1000):
             rw = np.random.normal(mu, sigma, days)
             sims[:, i] = current_price * np.exp(np.cumsum(rw))
-        finals = sims[-1, :]
-
-        bins = np.linspace(finals.min(), finals.max(), 10)
-        counts, _ = np.histogram(finals, bins=bins)
-        probs = counts / len(finals) * 100
-        idx_sorted = np.argsort(probs)[::-1]
-
-        # Tabel Peluang Rentang Harga
-        table_html = "<table><thead><tr><th>Rentang Harga</th><th>Peluang</th></tr></thead><tbody>"
-
-        total_peluang = 0
-        rentang_bawah = float('inf')
-        rentang_atas = 0
-
-        for idx, id_sort in enumerate(idx_sorted):
-            if probs[id_sort] == 0:
-                continue
-            low = bins[id_sort]
-            high = bins[id_sort+1] if id_sort+1 < len(bins) else bins[-1]
-            low_fmt = format_angka_indonesia(low)
-            high_fmt = format_angka_indonesia(high)
-            pct = format_persen_indonesia(probs[id_sort])
-            table_html += f"<tr><td>{low_fmt} - {high_fmt}</td><td>{pct}</td></tr>"
-
-            if idx < 3:
-                total_peluang += probs[id_sort]
-                rentang_bawah = min(rentang_bawah, low)
-                rentang_atas = max(rentang_atas, high)
-
-        total_peluang_fmt = format_persen_indonesia(total_peluang)
-        rentang_bawah_fmt = format_angka_indonesia(rentang_bawah)
-        rentang_atas_fmt = format_angka_indonesia(rentang_atas)
-
-        table_html += "</tbody></table>"
-
-        st.markdown(table_html, unsafe_allow_html=True)
-
-        st.write(f"""
-            **Peluang kumulatif dari tiga rentang harga tertinggi mencapai {total_peluang_fmt}, dengan kisaran harga US${rentang_bawah_fmt} hingga US${rentang_atas_fmt}.**
-            Artinya, berdasarkan simulasi, ada kemungkinan besar harga akan bergerak dalam kisaran tersebut dalam {days} hari ke depan.
-        """)
-
-        # Tabel Statistik Tambahan
-        mean_log = mu
-        price_based_on_mean = current_price * np.exp(mean_log)
-        chance_above_mean = np.sum(finals > price_based_on_mean) / 1000 * 100
-        standard_deviation = sigma
-        skewness = (np.sum((finals - finals.mean()) ** 3) / len(finals)) / (finals.std() ** 3)
-
-        stats_html = "<table><thead><tr><th>Statistik</th><th>Nilai</th></tr></thead><tbody>"
-        stats_html += f"<tr><td>Mean (Harga Logaritmik)</td><td>{mean_log:.3f}</td></tr>"
-        stats_html += f"<tr><td>Harga Berdasarkan Mean</td><td>{format_angka_indonesia(price_based_on_mean)}</td></tr>"
-        stats_html += f"<tr><td>Chance Above Mean</td><td>{format_persen_indonesia(chance_above_mean)}</td></tr>"
-        stats_html += f"<tr><td>Standard Deviation</td><td>{standard_deviation:.3f}</td></tr>"
-        stats_html += f"<tr><td>Skewness</td><td>{skewness:.3f}</td></tr>"
-
-        rentang_tertinggi = f"{format_angka_indonesia(rentang_bawah)} - {format_angka_indonesia(rentang_atas)}"
-        stats_html += f"<tr><td>Rentang Harga (Kumulatif Tertinggi)</td><td>{rentang_tertinggi} ({total_peluang_fmt})</td></tr>"
-
-        stats_html += "</tbody></table>"
-
-        st.markdown(stats_html, unsafe_allow_html=True)
-
-        # Kesimpulan
-        st.write(f"""
-            **Kesimpulan:**
-            Dari hasil simulasi, diperkirakan harga akan berada dalam kisaran US${format_angka_indonesia(rentang_bawah)} hingga US${format_angka_indonesia(rentang_atas)} dengan peluang kumulatif sebesar {total_peluang_fmt}. Skewness positif menunjukkan bahwa harga lebih condong untuk bergerak naik, meskipun fluktuasi tajam tidak diharapkan dalam waktu dekat.
-        """)
-
-        # Keterangan lengkap
-        st.markdown(f"""
-            <small>
-            <table>
-                <thead><tr><th>Statistik</th><th>Penjelasan</th></tr></thead>
-                <tbody>
-                    <tr><td>Mean (Harga Logaritmik)</td><td>Rata-rata perubahan harga dalam bentuk logaritmik, menggambarkan tren harga secara umum dalam jangka waktu tertentu.</td></tr>
-                    <tr><td>Harga Berdasarkan Mean</td><td>Perkiraan harga berdasarkan rata-rata logaritmik, memberikan titik acuan harga yang lebih stabil.</td></tr>
-                    <tr><td>Chance Above Mean</td><td>Probabilitas harga bergerak lebih tinggi dari rata-rata historis.</td></tr>
-                    <tr><td>Standard Deviation</td><td>Ukuran volatilitas, menunjukkan seberapa besar fluktuasi harga dari rata-rata.</td></tr>
-                    <tr><td>Skewness</td><td>Mengukur kecenderungan pergerakan harga; nilai positif menunjukkan kecenderungan naik.</td></tr>
-                    <tr><td>Rentang Harga (Kumulatif Tertinggi)</td><td>Kisaran harga yang memiliki peluang tertinggi dalam simulasi, bersama dengan persentase kumulatif.</td></tr>
-                </tbody>
-            </table>
-            </small>
-        """, unsafe_allow_html=True)
-
-except Exception as e:
-    st.error(f"Terjadi kesalahan: {e}")
+        finals = sims[-1, :
