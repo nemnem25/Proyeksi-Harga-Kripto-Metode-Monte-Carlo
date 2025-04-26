@@ -6,10 +6,9 @@ import pytz
 import time
 import requests
 
-
-# ————————————————————
+# ———————————————————— 
 # Fungsi utility: format angka & persen Indonesia
-# ————————————————————
+# ———————————————————— 
 
 def format_angka_indonesia(val: float) -> str:
     s = f"{val:,.0f}"  # <-- sekarang tanpa desimal
@@ -19,9 +18,9 @@ def format_persen_indonesia(val: float) -> str:
     s = f"{val:.1f}"
     return s.replace(".", ",") + "%"
 
-# ————————————————————
-# Konfigurasi halaman Streamlit
-# ————————————————————
+# ———————————————————— 
+# Konfigurasi halaman Streamlit 
+# ———————————————————— 
 
 st.set_page_config(page_title="Proyeksi Harga Kripto Metode Monte Carlo", layout="centered")
 
@@ -39,9 +38,9 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# ————————————————————
-# CSS global untuk styling hasil
-# ————————————————————
+# ———————————————————— 
+# CSS global untuk styling hasil 
+# ———————————————————— 
 
 st.markdown("""
     <style>
@@ -61,9 +60,9 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# —————————————————————————
-# Daftar ticker dan mapping ke CoinGecko
-# —————————————————————————
+# ———————————————————— 
+# Daftar ticker dan mapping ke CoinGecko 
+# ———————————————————— 
 
 ticker_options = [
     "BTC-USD", "ETH-USD", "BNB-USD", "USDT-USD", "SOL-USD", "XRP-USD", "TON-USD", "DOGE-USD",
@@ -89,17 +88,17 @@ coingecko_map = {
     "BTCB-USD":"bitcoin-bep2", "USDC-USD":"usd-coin", "SUI-USD":"sui", "BGB-USD":"bitget-token", "XTZ-USD":"tezos"
 }
 
-# ————————————————————
-# Input pengguna
-# ————————————————————
+# ———————————————————— 
+# Input pengguna 
+# ———————————————————— 
 
 ticker_input = st.selectbox("Pilih simbol kripto:", ticker_options)
 if not ticker_input:
     st.stop()
 
-# ————————————————————
-# Logika simulasi
-# ————————————————————
+# ———————————————————— 
+# Logika simulasi 
+# ———————————————————— 
 
 try:
     coin_id = coingecko_map[ticker_input]
@@ -146,7 +145,7 @@ try:
         probs = counts / len(finals) * 100
         idx_sorted = np.argsort(probs)[::-1]
 
-        table_html = "<table><thead><tr><th>Peluang</th><th>Rentang Harga (US$)</th></tr></thead><tbody>"
+        table_html = "<table><thead><tr><th>Statistik</th><th>Nilai</th><th>Keterangan</th></tr></thead><tbody>"
 
         total_peluang = 0
         rentang_bawah = float('inf')
@@ -160,7 +159,7 @@ try:
             low_fmt = format_angka_indonesia(low)
             high_fmt = format_angka_indonesia(high)
             pct = format_persen_indonesia(probs[id_sort])
-            table_html += f"<tr><td>{pct}</td><td>{low_fmt} - {high_fmt}</td></tr>"
+            table_html += f"<tr><td>{pct}</td><td>{low_fmt} - {high_fmt}</td><td></td></tr>"
 
             if idx < 3:
                 total_peluang += probs[id_sort]
@@ -172,7 +171,7 @@ try:
         rentang_atas_fmt = format_angka_indonesia(rentang_atas)
 
         table_html += f"""
-        <tr class='highlight-green'><td colspan='2'>
+        <tr class='highlight-green'><td colspan='3'>
         Peluang kumulatif dari tiga rentang harga tertinggi mencapai {total_peluang_fmt}, dengan kisaran harga US${rentang_bawah_fmt} hingga US${rentang_atas_fmt}. Artinya, berdasarkan simulasi, ada kemungkinan besar harga akan bergerak dalam kisaran tersebut dalam {days} hari ke depan.
         </td></tr>
         """
