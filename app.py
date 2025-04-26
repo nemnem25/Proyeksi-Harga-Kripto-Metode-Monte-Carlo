@@ -35,7 +35,7 @@ st.markdown(f"""
 
 st.title("Proyeksi Harga Kripto Metode Monte Carlo")
 st.markdown(
-    "_Simulasi berbasis data historis untuk memproyeksikan harga kripto selama beberapa hari ke depan, menggunakan metode Monte Carlo. Harga yang digunakan adalah harga penutupan sehari sebelumnya dari CoinGecko._",
+    "_Simulasi berbasis data historis untuk memproyeksikan harga kripto selama beberapa hari ke depan, menggunakan metode Monte Carlo. Harga yang digunakan adalah harga penutupan selama 365 hari terakhir dari CoinGecko._",
     unsafe_allow_html=True
 )
 
@@ -131,7 +131,7 @@ try:
         current_price = df["Close"].iloc[-2]
 
     harga_penutupan = format_angka_indonesia(current_price)
-    st.write(f"**Harga penutupan {ticker_input} sehari sebelumnya: US${harga_penutupan}**")
+    st.write(f"**Harga penutupan {ticker_input} terakhir: US${harga_penutupan}**")
 
     for days in [7, 30, 90]:
         st.subheader(f"Proyeksi Harga Kripto {ticker_input} untuk {days} Hari ke Depan")
