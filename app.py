@@ -145,7 +145,8 @@ try:
         probs = counts / len(finals) * 100
         idx_sorted = np.argsort(probs)[::-1]
 
-        table_html = "<table><thead><tr><th>Statistik</th><th>Nilai</th></tr></thead><tbody>"
+        # Tabel Peluang Rentang Harga
+        table_html = "<table><thead><tr><th>Rentang Harga</th><th>Peluang</th></tr></thead><tbody>"
 
         total_peluang = 0
         rentang_bawah = float('inf')
@@ -170,15 +171,58 @@ try:
         rentang_bawah_fmt = format_angka_indonesia(rentang_bawah)
         rentang_atas_fmt = format_angka_indonesia(rentang_atas)
 
-        table_html += f"""
-        <tr class='highlight-green'><td colspan='2'>
-        Peluang kumulatif dari tiga rentang harga tertinggi mencapai {total_peluang_fmt}, dengan kisaran harga US${rentang_bawah_fmt} hingga US${rentang_atas_fmt}. Artinya, berdasarkan simulasi, ada kemungkinan besar harga akan bergerak dalam kisaran tersebut dalam {days} hari ke depan.
-        </td></tr>
-        """
-
         table_html += "</tbody></table>"
 
         st.markdown(table_html, unsafe_allow_html=True)
+
+        st.write(f"""
+            **Peluang kumulatif dari tiga rentang harga tertinggi mencapai {total_peluang_fmt}, dengan kisaran harga US${rentang_bawah_fmt} hingga US${rentang_atas_fmt}.**
+            Artinya, berdasarkan simulasi, ada kemungkinan besar harga akan bergerak dalam kisaran tersebut dalam {days} hari ke depan.
+        """)
+
+        # Tabel Statistik Tambahan
+        mean_log = mu
+        price_based_on_mean = current_price * np.exp(mean_log)
+        chance_above_mean = np.sum(finals > price_based_on_mean) / 1000 * 100
+        standard_deviation = sigma
+        skewness = (np.sum((finals - finals.mean()) ** 3) / len(finals)) / (finals.std() ** 3)
+
+        stats_html = "<table><thead><tr><th>Statistik</th><th>Nilai</th></tr></thead><tbody>"
+        stats_html += f"<tr><td>Mean (Harga Logaritmik)</td><td>{mean_log:.3f}</td></tr>"
+        stats_html += f"<tr><td>Harga Berdasarkan Mean</td><td>{format_angka_indonesia(price_based_on_mean)}</td></tr>"
+        stats_html += f"<tr><td>Chance Above Mean</td><td>{format_persen_indonesia(chance_above_mean)}</td></tr>"
+        stats_html += f"<tr><td>Standard Deviation</td><td>{standard_deviation:.3f}</td></tr>"
+        stats_html += f"<tr><td>Skewness</td><td>{skewness:.3f}</td></tr>"
+
+        rentang_tertinggi = f"{format_angka_indonesia(rentang_bawah)} - {format_angka_indonesia(rentang_atas)}"
+        stats_html += f"<tr><td>Rentang Harga (Kumulatif Tertinggi)</td><td>{rentang_tertinggi} ({total_peluang_fmt})</td></tr>"
+
+        stats_html += "</tbody></table>"
+
+        st.markdown(stats_html, unsafe_allow_html=True)
+
+        # Kesimpulan
+        st.write(f"""
+            **Kesimpulan:**
+            Dari hasil simulasi, diperkirakan harga akan berada dalam kisaran US${format_angka_indonesia(rentang_bawah)} hingga US${format_angka_indonesia(rentang_atas)} dengan peluang kumulatif sebesar {total_peluang_fmt}. Skewness positif menunjukkan bahwa harga lebih condong untuk bergerak naik, meskipun fluktuasi tajam tidak diharapkan dalam waktu dekat.
+        """)
+
+        # Keterangan lengkap
+        st.markdown(f"""
+            <small>
+            <table>
+                <thead><tr><th>Statistik</th><th>Penjelasan</th></tr></thead>
+                <tbody>
+                    <tr><td>Mean (Harga Logaritmik)</td><td>Rata-rata perubahan harga dalam bentuk logaritmik, menggambarkan tren harga secara umum dalam jangka waktu tertentu.</td></tr>
+                    <tr><td>Harga Berdasarkan Mean</td><td>Perkiraan harga berdasarkan rata-rata logaritmik, memberikan titik acuan harga yang lebih stabil.</td></tr>
+                    <tr><td>Chance Above Mean</td><td>Probabilitas harga bergerak lebih tinggi dari rata-rata historis.</td></tr>
+                    <tr><td>Standard Deviation</td><td>Ukuran volatilitas, menunjukkan seberapa besar fluktuasi harga dari rata-rata.</td></tr>
+                    <tr><td>Skewness</td><td>Mengukur kecenderungan pergerakan harga; nilai positif menunjukkan kecenderungan naik.</td></tr>
+                    <tr><td>Rentang Harga (Kumulatif Tertinggi)</td><td>Kisaran harga yang memiliki peluang tertinggi dalam simulasi, bersama dengan persentase kumulatif.</td></tr>
+                </tbody>
+            </table>
+            </small>
+        """, unsafe_allow_html=True)
 
 except Exception as e:
     st.error(f"Terjadi kesalahan: {e}")
