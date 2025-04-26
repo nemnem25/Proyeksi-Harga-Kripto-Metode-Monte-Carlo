@@ -52,7 +52,7 @@ st.markdown("""
         text-align: center;
     }
     .highlight-green {
-        background-color: #d4edda;
+        background-color: #38761D;
         font-weight: bold;
     }
     </style>
