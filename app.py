@@ -221,3 +221,6 @@ try:
         """
 
         st.markdown(stat_table_html, unsafe_allow_html=True)
+
+except Exception as e:
+    st.error(f"Terjadi kesalahan: {e}")
