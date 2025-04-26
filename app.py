@@ -12,8 +12,9 @@ import requests
 # ————————————————————
 
 def format_angka_indonesia(val: float) -> str:
-    s = f"{val:,.2f}"
+    s = f"{val:,.0f}"
     return s.replace(",", "X").replace(".", ",").replace("X", ".")
+
 
 def format_persen_indonesia(val: float) -> str:
     s = f"{val:.1f}"
@@ -203,7 +204,7 @@ try:
         <tr><td>Mean (Harga Logaritmik)</td><td>{mean_log_fmt}</td></tr>
         <tr><td>Harga Berdasarkan Mean</td><td>US${harga_mean_fmt}</td></tr>
         <tr><td>Chance Above Mean</td><td>{chance_above_mean_fmt}</td></tr>
-        <tr><td>Standard Deviation</td><td>{std_dev_fmt}</td></tr>
+        <tr><td>Standard Deviation</td><td>US${std_dev_fmt}</td></tr>
         <tr><td>Skewness</td><td>{skewness_fmt}</td></tr>
         <tr><td>Rentang Harga (Kumulatif Tertinggi)</td><td>US${rentang_bawah_fmt} - US${rentang_atas_fmt}</td></tr>
         </tbody></table>
