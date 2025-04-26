@@ -1,8 +1,11 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timedelta
+import pytz
+import time
 import requests
+
 
 # ————————————————————
 # Fungsi utility: format angka & persen Indonesia
@@ -23,7 +26,7 @@ def format_persen_indonesia(val: float) -> str:
 st.set_page_config(page_title="Proyeksi Harga Kripto Metode Monte Carlo", layout="centered")
 
 # Tampilkan waktu realtime di atas
-waktu_sekarang = datetime.now().strftime("%A, %d %B %Y | %H:%M:%S")
+waktu_sekarang = datetime.now().strftime("%A, %d %B %Y")
 st.markdown(f"""
 <div style='background-color: #f1f8e9; padding: 8px; border-radius: 8px; text-align: center; font-weight: bold; font-size: 16px;'>
 ⏰ {waktu_sekarang}
@@ -85,7 +88,6 @@ coingecko_map = {
     "TONCOIN-USD":"toncoin", "AR-USD":"arweave", "INJ-USD":"injective-protocol", "GRT-USD":"the-graph",
     "BTCB-USD":"bitcoin-bep2", "USDC-USD":"usd-coin", "SUI-USD":"sui", "BGB-USD":"bitget-token", "XTZ-USD":"tezos"
 }
-
 
 # ————————————————————
 # Input pengguna
