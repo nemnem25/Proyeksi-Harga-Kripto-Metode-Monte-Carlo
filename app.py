@@ -28,14 +28,14 @@ st.set_page_config(page_title="Proyeksi Harga Kripto Metode Monte Carlo", layout
 # Tampilkan waktu realtime di atas
 waktu_sekarang = datetime.now().strftime("%A, %d %B %Y")
 st.markdown(f"""
-<div style='background-color: #f1f8e9; padding: 8px; border-radius: 8px; text-align: center; font-weight: bold; font-size: 16px;'>
+<div style='background-color: #5B5B5B; padding: 8px; border-radius: 8px; text-align: center; font-weight: bold; font-size: 16px;'>
 ⏰ {waktu_sekarang}
 </div>
 """, unsafe_allow_html=True)
 
 st.title("Proyeksi Harga Kripto Metode Monte Carlo")
 st.markdown(
-    "_Simulasi berbasis data historis untuk memproyeksikan harga kripto selama beberapa hari ke depan, menggunakan metode Monte Carlo. Harga yang digunakan adalah harga penutupan sehari sebelumnya dari CoinGecko._",
+    "_Simulasi berbasis data historis untuk memproyeksikan harga kripto selama beberapa hari ke depan, menggunakan metode Monte Carlo. Harga yang digunakan adalah harga penutupan selama 365 hari terakhir._",
     unsafe_allow_html=True
 )
 
@@ -52,11 +52,11 @@ st.markdown("""
     th, td {
         border: 1px solid white;
         padding: 6px;
-        text-align: center;
+        text-align: left;
     }
-    .highlight-green {
-        background-color: #38761D;
-        font-weight: bold;
+    .highlight-grey {
+        background-color: #5B5B5B;
+        font-weight: normal;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -180,6 +180,37 @@ try:
         table_html += "</tbody></table>"
 
         st.markdown(table_html, unsafe_allow_html=True)
+
+        # Hitung statistik tambahan
+        mean_log = np.mean(np.log(finals))
+        harga_mean = np.exp(mean_log)
+        chance_above_mean = np.mean(finals > harga_mean) * 100
+        std_dev = np.std(finals)
+        skewness = pd.Series(finals).skew()
+
+        # Format angka
+        mean_log_fmt = format_angka_indonesia(mean_log)
+        harga_mean_fmt = format_angka_indonesia(harga_mean)
+        chance_above_mean_fmt = format_persen_indonesia(chance_above_mean)
+        std_dev_fmt = format_angka_indonesia(std_dev)
+        skewness_fmt = format_angka_indonesia(skewness)
+
+        # Tambahkan tabel statistik
+        stat_table_html = f"""
+        <br>
+        <table>
+        <thead><tr><th>Statistik</th><th>Nilai</th></tr></thead><tbody>
+        <tr><td>Mean (Harga Logaritmik)</td><td>{mean_log_fmt}</td></tr>
+        <tr><td>Harga Berdasarkan Mean</td><td>US${harga_mean_fmt}</td></tr>
+        <tr><td>Chance Above Mean</td><td>{chance_above_mean_fmt}</td></tr>
+        <tr><td>Standard Deviation</td><td>{std_dev_fmt}</td></tr>
+        <tr><td>Skewness</td><td>{skewness_fmt}</td></tr>
+        <tr><td>Rentang Harga (Kumulatif Tertinggi)</td><td>US${rentang_bawah_fmt} - US${rentang_atas_fmt}</td></tr>
+        </tbody></table>
+        """
+
+        st.markdown(stat_table_html, unsafe_allow_html=True)
+
 
 except Exception as e:
     st.error(f"Terjadi kesalahan: {e}")
