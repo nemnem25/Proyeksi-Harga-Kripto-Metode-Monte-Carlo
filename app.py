@@ -62,6 +62,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+
 # —————————————————————————
 # Daftar ticker dan mapping ke CoinGecko
 # —————————————————————————
