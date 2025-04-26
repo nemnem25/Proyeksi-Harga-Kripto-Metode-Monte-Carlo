@@ -226,30 +226,37 @@ try:
 # Kalkulator Risiko
 # ————————————————————
 try:
-    # kode perhitungan kalkulator risiko
-    harga_sekarang = harga_awal
-    harga_rata_rata = mean_hasil
-    peluang_naik = chance_above_mean / 100
-    peluang_turun = 1 - peluang_naik
-    std_dev = std_hasil
+    # Gunakan variabel yang sudah ada sebelumnya
+    harga_sekarang = current_price  # Harga terkini
+    harga_rata_rata = harga_mean  # Mean harga
+    peluang_naik = chance_above_mean / 100  # Probabilitas harga di atas rata-rata
+    peluang_turun = 1 - peluang_naik  # Probabilitas harga di bawah rata-rata
 
+    # Gunakan std_dev yang sudah dihitung
+    std_dev = std_dev  # Standar deviasi harga
+
+    # Hitung potential gain dan loss
     potential_gain = peluang_naik * max(harga_rata_rata - harga_sekarang, 0)
     potential_loss = peluang_turun * max(harga_sekarang - (harga_sekarang - std_dev), 0)
 
+    # Menghitung rasio risiko/imbalan
     if potential_loss != 0:
         risk_reward_ratio = potential_gain / potential_loss
     else:
         risk_reward_ratio = float('inf')
 
+    # Format hasil
     potential_gain_fmt = f"US${potential_gain:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
     potential_loss_fmt = f"US${potential_loss:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
     risk_reward_ratio_fmt = f"{risk_reward_ratio:.2f}"
 
 except Exception as e:
+    # Tangani error
     potential_gain_fmt = "Error"
     potential_loss_fmt = "Error"
     risk_reward_ratio_fmt = "Error"
     print("Error saat menghitung Kalkulator Risiko:", e)
     st.error(f"Terjadi kesalahan: {e}")
+
 
 
