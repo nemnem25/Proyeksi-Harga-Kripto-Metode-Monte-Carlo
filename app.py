@@ -222,9 +222,11 @@ try:
 
         st.markdown(stat_table_html, unsafe_allow_html=True)
 
+# ————————————————————
 # Kalkulator Risiko
+# ————————————————————
 try:
-    # kode yang mau kamu jalankan
+    # kode perhitungan kalkulator risiko
     harga_sekarang = harga_awal
     harga_rata_rata = mean_hasil
     peluang_naik = chance_above_mean / 100
@@ -249,15 +251,6 @@ except Exception as e:
     risk_reward_ratio_fmt = "Error"
     print("Error saat menghitung Kalkulator Risiko:", e)
 
-
-# Tampilkan di Streamlit
-st.subheader("📈 Kalkulator Risiko")
-
-st.markdown(f"""
-**Potential Gain:** {potential_gain_fmt}  
-**Potential Loss:** {potential_loss_fmt}  
-**Risk-Reward Ratio:** {risk_reward_ratio_fmt}
-""")
 
 except Exception as e:
     st.error(f"Terjadi kesalahan: {e}")
