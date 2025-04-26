@@ -145,7 +145,7 @@ try:
         probs = counts / len(finals) * 100
         idx_sorted = np.argsort(probs)[::-1]
 
-        table_html = "<table><thead><tr><th>Statistik</th><th>Nilai</th><th>Keterangan</th></tr></thead><tbody>"
+        table_html = "<table><thead><tr><th>Statistik</th><th>Nilai</th></tr></thead><tbody>"
 
         total_peluang = 0
         rentang_bawah = float('inf')
@@ -159,7 +159,7 @@ try:
             low_fmt = format_angka_indonesia(low)
             high_fmt = format_angka_indonesia(high)
             pct = format_persen_indonesia(probs[id_sort])
-            table_html += f"<tr><td>{pct}</td><td>{low_fmt} - {high_fmt}</td><td></td></tr>"
+            table_html += f"<tr><td>{low_fmt} - {high_fmt}</td><td>{pct}</td></tr>"
 
             if idx < 3:
                 total_peluang += probs[id_sort]
@@ -171,7 +171,7 @@ try:
         rentang_atas_fmt = format_angka_indonesia(rentang_atas)
 
         table_html += f"""
-        <tr class='highlight-green'><td colspan='3'>
+        <tr class='highlight-green'><td colspan='2'>
         Peluang kumulatif dari tiga rentang harga tertinggi mencapai {total_peluang_fmt}, dengan kisaran harga US${rentang_bawah_fmt} hingga US${rentang_atas_fmt}. Artinya, berdasarkan simulasi, ada kemungkinan besar harga akan bergerak dalam kisaran tersebut dalam {days} hari ke depan.
         </td></tr>
         """
