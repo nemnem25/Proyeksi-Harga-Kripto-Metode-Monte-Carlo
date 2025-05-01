@@ -150,8 +150,8 @@ try:
 
     for days in [7, 30, 90]:
         st.subheader(f"Proyeksi Harga Kripto {ticker_input} untuk {days} Hari ke Depan")
-        sims = np.zeros((days, 1000))
-        for i in range(1000):
+        sims = np.zeros((days, 10000))
+        for i in range(10000):
             rw = np.random.normal(mu, sigma, days)
             sims[:, i] = current_price * np.exp(np.cumsum(rw))
         finals = sims[-1, :]
@@ -222,8 +222,7 @@ try:
         <tr><td>Skewness</td><td>{skewness_fmt}</td></tr>
         <tr class="highlight-grey">
             <td colspan="2">
-                <strong>Kesimpulan:</strong><br>
-                Berdasarkan hasil simulasi, harga kripto diperkirakan berada dalam kisaran yang cukup stabil, dengan harga logaritmik rata-rata (mean) sebesar <strong>US${harga_mean_fmt}</strong>. Ini menunjukkan potensi pergerakan harga mendekati angka ini dalam beberapa waktu ke depan. Dengan kemungkinan <strong>{chance_above_mean_fmt}</strong> harga akan berada di atas harga rata-rata, peluang untuk harga naik cukup signifikan. Meskipun begitu, fluktuasi harga masih tinggi, tercermin dari <strong>Standard Deviation</strong> sebesar <strong>US${std_dev_fmt}</strong>, yang menunjukkan adanya kemungkinan fluktuasi harga yang cukup lebar. Selain itu, distribusi harga yang sedikit condong ke kiri (<strong>Skewness</strong> <strong>{skewness_fmt}</strong>) menandakan adanya kecenderungan harga bergerak turun lebih sering dibandingkan naik.
+                <strong>Kesimpulan:</strong> Berdasarkan hasil simulasi, harga kripto diperkirakan berada dalam kisaran yang cukup stabil, dengan harga logaritmik rata-rata (mean) sebesar <strong>US${harga_mean_fmt}</strong>. Ini menunjukkan potensi pergerakan harga mendekati angka ini dalam beberapa waktu ke depan. Dengan kemungkinan <strong>{chance_above_mean_fmt}</strong> harga akan berada di atas harga rata-rata, peluang untuk harga naik cukup signifikan. Meskipun begitu, fluktuasi harga masih tinggi, tercermin dari <strong>Standard Deviation</strong> sebesar <strong>US${std_dev_fmt}</strong>, yang menunjukkan adanya kemungkinan fluktuasi harga yang cukup lebar. Selain itu, distribusi harga yang sedikit condong ke kiri (<strong>Skewness</strong> <strong>{skewness_fmt}</strong>) menandakan adanya kecenderungan harga bergerak turun lebih sering dibandingkan naik.
             </td>
         </tr>
         </tbody></table>
