@@ -160,6 +160,7 @@ try:
         rentang_atas = 0
 
 try:
+    # Start of logic within the 'try' block
     for idx, id_sort in enumerate(idx_sorted):
         if probs[id_sort] == 0:
             continue
@@ -170,10 +171,10 @@ try:
         pct = format_persen_indonesia(probs[id_sort])
         table_html += f"<tr><td>{pct}</td><td>{low_fmt} - {high_fmt}</td></tr>"
 
-    # Close the table properly
+    # Ensure table is closed properly
     table_html += "</tbody></table>"
     st.markdown(table_html, unsafe_allow_html=True)
 
 except Exception as e:
-    # Handle any errors during execution
+    # Handling any exceptions that occur
     st.error(f"Terjadi kesalahan saat memproses data: {e}")
