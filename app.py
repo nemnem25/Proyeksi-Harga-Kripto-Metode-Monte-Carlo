@@ -210,8 +210,8 @@ try:
         std_dev_fmt = format_angka_indonesia(std_dev)
         skewness_fmt = format_angka_indonesia(skewness)
 
-        try:
-    # Logika simulasi dan tabel statistik
+       try:
+    # Pastikan blok kode dalam `try` diindentasi dengan benar
     stat_table_html = f"""
     <br>
     <table>
@@ -230,6 +230,9 @@ try:
     """
     st.markdown(stat_table_html, unsafe_allow_html=True)
 
+except Exception as e:
+    # Blok except untuk menangkap kesalahan dan memberikan pesan error
+    st.error(f"Terjadi kesalahan: {e}")
 except Exception as e:
     st.error(f"Terjadi kesalahan: {e}")
 
