@@ -16,7 +16,7 @@ def format_angka_indonesia(val) -> str:
     except (TypeError, ValueError):
         return str(val)
     if abs(val) < 1:
-        s = f"{val:,.4f}"
+        s = f"{val:,.8f}"
     else:
         s = f"{val:,.0f}"
     return s.replace(",", "X").replace(".", ",").replace("X", ".")
