@@ -172,3 +172,5 @@ try:
             high = bins[id_sort+1] if id_sort+1 < len(bins) else bins[-1]
             low_fmt = format_angka_indonesia(low)
             high_fmt = format_angka_indonesia(high)
+            pct = format_persen_indonesia(probs[id_sort])
+           
