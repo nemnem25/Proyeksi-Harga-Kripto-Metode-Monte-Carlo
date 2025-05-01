@@ -159,7 +159,7 @@ try:
         rentang_bawah = float('inf')
         rentang_atas = 0
 
-        try:
+try:
     for idx, id_sort in enumerate(idx_sorted):
         if probs[id_sort] == 0:
             continue
