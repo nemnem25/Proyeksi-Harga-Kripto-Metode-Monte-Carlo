@@ -114,9 +114,7 @@ if not ticker_input:
 # ————————————————————
 
 try:
-    # Logika simulasi dan perhitungan lainnya
     coin_id = coingecko_map[ticker_input]
-
     resp = requests.get(
         f"https://api.coingecko.com/api/v3/coins/{coin_id}/market_chart",
         params={"vs_currency":"usd","days":"365"}
@@ -134,14 +132,11 @@ try:
     log_ret = np.log(df["Close"]/df["Close"].shift(1)).dropna()
     mu, sigma = log_ret.mean(), log_ret.std()
 
-    try:
-        r2 = requests.get(
-            f"https://api.coingecko.com/api/v3/simple/price?ids={coin_id}&vs_currencies=usd"
-        )
-        r2.raise_for_status()
-        current_price = r2.json()[coin_id]["usd"]
-    except:
-        current_price = df["Close"].iloc[-2]
+    r2 = requests.get(
+        f"https://api.coingecko.com/api/v3/simple/price?ids={coin_id}&vs_currencies=usd"
+    )
+    r2.raise_for_status()
+    current_price = r2.json()[coin_id]["usd"]
 
     harga_penutupan = format_angka_indonesia(current_price)
     st.write(f"**Harga penutupan {ticker_input} sehari sebelumnya: US${harga_penutupan}**")
@@ -160,7 +155,6 @@ try:
         idx_sorted = np.argsort(probs)[::-1]
 
         table_html = "<table><thead><tr><th>Peluang</th><th>Rentang Harga (US$)</th></tr></thead><tbody>"
-
         total_peluang = 0
         rentang_bawah = float('inf')
         rentang_atas = 0
@@ -173,4 +167,4 @@ try:
             low_fmt = format_angka_indonesia(low)
             high_fmt = format_angka_indonesia(high)
             pct = format_persen_indonesia(probs[id_sort])
-           
+            table_html += f"<tr><td>{pct}</td><td>{low_fmt}
