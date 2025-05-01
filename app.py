@@ -136,14 +136,8 @@ try:
     log_ret = np.log(df["Close"]/df["Close"].shift(1)).dropna()
     mu, sigma = log_ret.mean(), log_ret.std()
 
-    try:
-        r2 = requests.get(
-            f"https://api.coingecko.com/api/v3/simple/price?ids={coin_id}&vs_currencies=usd"
-        )
-        r2.raise_for_status()
-        current_price = r2.json()[coin_id]["usd"]
-    except:
-        current_price = df["Close"].iloc[-2]
+    # Harga penutupan terakhir (dari hari sebelumnya, sesuai historis)
+    current_price = df["Close"].iloc[-1]
 
     harga_penutupan = format_angka_indonesia(current_price)
     st.write(f"**Harga penutupan {ticker_input} sehari sebelumnya: US${harga_penutupan}**")
