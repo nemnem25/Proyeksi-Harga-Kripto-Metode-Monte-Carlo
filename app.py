@@ -211,7 +211,7 @@ try:
         skewness_fmt = format_angka_indonesia(skewness)
 
         # Tambahkan tabel statistik dan kesimpulan
-stat_table_html = f"""
+        stat_table_html = f"""
 <br>
 <table>
 <thead><tr><th>Statistik</th><th>Nilai</th></tr></thead><tbody>
@@ -234,8 +234,6 @@ stat_table_html = f"""
 </tr>
 </tbody></table>
 """
-
-
         st.markdown(stat_table_html, unsafe_allow_html=True)
 
 except Exception as e:
