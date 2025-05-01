@@ -159,22 +159,14 @@ try:
         rentang_bawah = float('inf')
         rentang_atas = 0
 
-try:
-    # Start of logic within the 'try' block
-    for idx, id_sort in enumerate(idx_sorted):
-        if probs[id_sort] == 0:
-            continue
-        low = bins[id_sort]
-        high = bins[id_sort+1] if id_sort+1 < len(bins) else bins[-1]
-        low_fmt = format_angka_indonesia(low)
-        high_fmt = format_angka_indonesia(high)
-        pct = format_persen_indonesia(probs[id_sort])
-        table_html += f"<tr><td>{pct}</td><td>{low_fmt} - {high_fmt}</td></tr>"
+        for idx, id_sort in enumerate(idx_sorted):
+            if probs[id_sort] == 0:
+                continue
+            low = bins[id_sort]
+            high = bins[id_sort+1] if id_sort+1 < len(bins) else bins[-1]
+            low_fmt = format_angka_indonesia(low)
+            high_fmt = format_angka_indonesia(high)
+            pct = format_persen_indonesia(probs[id_sort])
+            table_html += f"<tr><td>{pct}</td><td>{low_fmt} - {high_fmt}</td></tr>"
 
-    # Ensure table is closed properly
-    table_html += "</tbody></table>"
-    st.markdown(table_html, unsafe_allow_html=True)
-
-except Exception as e:
-    # Handling any exceptions that occur
-    st.error(f"Terjadi kesalahan saat memproses data: {e}")
+        table_html += "</tbody></
