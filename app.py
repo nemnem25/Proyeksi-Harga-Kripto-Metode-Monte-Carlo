@@ -167,4 +167,4 @@ try:
             low_fmt = format_angka_indonesia(low)
             high_fmt = format_angka_indonesia(high)
             pct = format_persen_indonesia(probs[id_sort])
-            table_html += f"<tr><td>{pct}</td><td>{low_fmt}
+            table_html += f"<tr><td>{pct}</td><td>{low_fmt} - {high_fmt}</td></tr>"
