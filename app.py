@@ -137,7 +137,7 @@ try:
     mu, sigma = log_ret.mean(), log_ret.std()
 
     # Harga penutupan terakhir (dari hari sebelumnya, sesuai historis)
-    current_price = df["Close"].iloc[-1]
+    current_price = df["Close"].iloc[-2]
 
     harga_penutupan = format_angka_indonesia(current_price)
     st.write(f"**Harga penutupan {ticker_input} sehari sebelumnya: US${harga_penutupan}**")
