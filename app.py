@@ -6,17 +6,26 @@ import pytz
 import time
 import requests
 
-
 # ————————————————————
-# Fungsi utility: format angka & persen Indonesia
+# Utility formatting angka Indonesia 
 # ————————————————————
 
-def format_angka_indonesia(val: float) -> str:
-    s = f"{val:,.0f}"
+def format_angka_indonesia(val) -> str:
+    try:
+        val = float(val)
+    except (TypeError, ValueError):
+        return str(val)
+    if abs(val) < 1:
+        s = f"{val:,.4f}"
+    else:
+        s = f"{val:,.0f}"
     return s.replace(",", "X").replace(".", ",").replace("X", ".")
 
-
-def format_persen_indonesia(val: float) -> str:
+def format_persen_indonesia(val) -> str:
+    try:
+        val = float(val)
+    except (TypeError, ValueError):
+        return str(val)
     s = f"{val:.1f}"
     return s.replace(".", ",") + "%"
 
