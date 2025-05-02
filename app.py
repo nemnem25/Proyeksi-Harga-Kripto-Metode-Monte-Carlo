@@ -36,7 +36,8 @@ def format_persen_indonesia(val) -> str:
 st.set_page_config(page_title="Proyeksi Harga Kripto Metode Monte Carlo", layout="centered")
 
 # Tampilkan waktu realtime di atas
-waktu_sekarang = datetime.now().strftime("%A, %d %B %Y")
+wib = pytz.timezone("Asia/Jakarta")
+waktu_sekarang = datetime.now(wib).strftime("%A, %d %B %Y")
 st.markdown(f"""
 <div style='background-color: #5B5B5B; padding: 8px; border-radius: 8px; text-align: center; font-weight: bold; font-size: 16px;'>
 ⏰ {waktu_sekarang}
