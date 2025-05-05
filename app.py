@@ -145,8 +145,8 @@ try:
 
     for days in [7, 30, 90]:
         st.subheader(f"Proyeksi Harga Kripto {ticker_input} untuk {days} Hari ke Depan")
-        sims = np.zeros((days, 1000))
-        for i in range(1000):
+        sims = np.zeros((days, 100000))
+        for i in range(100000):
             rw = np.random.normal(mu, sigma, days)
             sims[:, i] = current_price * np.exp(np.cumsum(rw))
         finals = sims[-1, :]
