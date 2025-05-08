@@ -143,6 +143,9 @@ try:
     harga_penutupan = format_angka_indonesia(current_price)
     st.write(f"**Harga penutupan {ticker_input} sehari sebelumnya: US${harga_penutupan}**")
 
+    # **random seed di sini**
+    np.random.seed(42)
+
     for days in [3, 7, 30, 90, 365]:
         st.subheader(f"Proyeksi Harga Kripto {ticker_input} untuk {days} Hari ke Depan")
         sims = np.zeros((days, 100000))
