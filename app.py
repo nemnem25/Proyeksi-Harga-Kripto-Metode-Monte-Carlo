@@ -87,7 +87,7 @@ ticker_options = [
     "DAI-USD", "APT-USD", "STETH-USD", "XLM-USD", "OKB-USD", "ETC-USD", "CRO-USD", "FIL-USD",
     "RNDR-USD", "ATOM-USD", "HBAR-USD", "KAS-USD", "IMX-USD", "TAO-USD", "VET-USD", "MNT-USD",
     "FET-USD", "LDO-USD", "TONCOIN-USD", "AR-USD", "INJ-USD", "GRT-USD", "BTCB-USD", "USDC-USD",
-    "SUI-USD", "BGB-USD", "XTZ-USD"
+    "SUI-USD", "BGB-USD", "XTZ-USD", "MUBARAK-USD"
 ]
 
 coingecko_map = {
@@ -101,7 +101,7 @@ coingecko_map = {
     "ATOM-USD":"cosmos", "HBAR-USD":"hedera-hashgraph", "KAS-USD":"kaspa", "IMX-USD":"immutable-x",
     "TAO-USD":"bittensor", "VET-USD":"vechain", "MNT-USD":"mantle", "FET-USD":"fetch-ai", "LDO-USD":"lido-dao",
     "TONCOIN-USD":"toncoin", "AR-USD":"arweave", "INJ-USD":"injective-protocol", "GRT-USD":"the-graph",
-    "BTCB-USD":"bitcoin-bep2", "USDC-USD":"usd-coin", "SUI-USD":"sui", "BGB-USD":"bitget-token", "XTZ-USD":"tezos"
+    "BTCB-USD":"bitcoin-bep2", "USDC-USD":"usd-coin", "SUI-USD":"sui", "BGB-USD":"bitget-token", "XTZ-USD":"tezos", "MUBARAK-USD":"mubarakcoin"
 }
 
 # ————————————————————
@@ -186,7 +186,7 @@ try:
 
         table_html += f"""
         <tr class='highlight-green'><td colspan='2'>
-        Peluang kumulatif dari tiga rentang harga tertinggi mencapai {total_peluang_fmt}, dengan kisaran harga US${rentang_bawah_fmt} hingga US${rentang_atas_fmt}. Artinya, berdasarkan simulasi, ada kemungkinan besar harga akan bergerak dalam kisaran tersebut dalam {days} hari ke depan.
+        Peluang kumulatif dari tiga rentang harga tertinggi mencapai {total_peluang_fmt}, dengan kisaran harga US${rentang_bawah_fmt} hingga US${rentang_atas_fmt}.
         </td></tr>
         """
 
@@ -226,8 +226,15 @@ try:
 </tr>
 </tbody></table>
 """
-
         st.markdown(stat_table_html, unsafe_allow_html=True)
+
+        # Tambahkan kotak teks untuk media sosial
+        social_media_text = (
+            f"Berdasarkan simulasi Monte Carlo, ada peluang sebesar {total_peluang_fmt} "
+            f"bagi {ticker_input} bergerak antara US${rentang_bawah_fmt} hingga US${rentang_atas_fmt} "
+            f"dalam {days} hari ke depan, dengan peluang {chance_above_mean_fmt} berada di atas rata-rata logaritmik US${harga_mean_fmt}."
+        )
+        st.text_area("Teks untuk Media Sosial", value=social_media_text, height=100)
 
 except Exception as e:
     st.error(f"Terjadi kesalahan: {e}")
