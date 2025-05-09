@@ -238,3 +238,12 @@ try:
 
 except Exception as e:
     st.error(f"Terjadi kesalahan: {e}")
+
+# Debugging sebelum seed diatur
+print("Angka acak sebelum seed:", np.random.normal(0, 1, 5))
+
+# Atur random seed
+np.random.seed(42)
+
+# Debugging setelah seed diatur
+print("Angka acak setelah seed:", np.random.normal(0, 1, 5))
