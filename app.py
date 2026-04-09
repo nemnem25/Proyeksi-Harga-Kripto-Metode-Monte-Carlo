@@ -204,10 +204,21 @@ st.markdown(tabel_stat, unsafe_allow_html=True)
 st.divider()
 
 # Social text
+# Hitung potensi perubahan (%)
+change_low = ((low - current_price) / current_price) * 100
+change_high = ((high - current_price) / current_price) * 100
+
+arah_low = "turun" if change_low < 0 else "naik"
+arah_high = "turun" if change_high < 0 else "naik"
+
+# Social text (UPDATED)
 social_text = (
     f"Simulasi Monte Carlo menunjukkan peluang {format_persen_indonesia(total)} "
     f"{ticker_input} di kisaran US${format_angka_indonesia(low)} – "
-    f"US${format_angka_indonesia(high)} dalam {days} hari."
+    f"US${format_angka_indonesia(high)} dalam {days} hari, "
+    f"dengan potensi {arah_low} {format_persen_indonesia(abs(change_low))} "
+    f"hingga {arah_high} {format_persen_indonesia(abs(change_high))} "
+    f"dari harga saat ini."
 )
 
 st.text_area(
