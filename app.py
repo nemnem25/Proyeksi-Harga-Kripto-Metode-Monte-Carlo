@@ -30,13 +30,25 @@ HORIZONS = [3, 7, 30, 90, 365]
 MAX_PERIOD = max(HORIZON_TO_PERIOD.values())
 
 COINGECKO_MAP = {
-    "BTC-USD": "bitcoin",
-    "ETH-USD": "ethereum",
-    "SOL-USD": "solana",
-    "ADA-USD": "cardano",
-    "BNB-USD": "binancecoin",
+    "BTC-USD": "bitcoin",          "ETH-USD": "ethereum",         "BNB-USD": "binancecoin",
+    "USDT-USD": "tether",          "SOL-USD": "solana",            "XRP-USD": "ripple",
+    "TON-USD": "toncoin",          "DOGE-USD": "dogecoin",         "ADA-USD": "cardano",
+    "AVAX-USD": "avalanche-2",     "SHIB-USD": "shiba-inu",        "WETH-USD": "weth",
+    "DOT-USD": "polkadot",         "TRX-USD": "tron",              "WBTC-USD": "wrapped-bitcoin",
+    "LINK-USD": "chainlink",       "MATIC-USD": "matic-network",   "ICP-USD": "internet-computer",
+    "LTC-USD": "litecoin",         "BCH-USD": "bitcoin-cash",      "NEAR-USD": "near",
+    "UNI-USD": "uniswap",          "PEPE-USD": "pepe",             "LEO-USD": "leo-token",
+    "DAI-USD": "dai",              "APT-USD": "aptos",             "STETH-USD": "staked-ether",
+    "XLM-USD": "stellar",          "OKB-USD": "okb",               "ETC-USD": "ethereum-classic",
+    "CRO-USD": "crypto-com-chain", "FIL-USD": "filecoin",          "RNDR-USD": "render-token",
+    "ATOM-USD": "cosmos",          "HBAR-USD": "hedera-hashgraph", "KAS-USD": "kaspa",
+    "IMX-USD": "immutable-x",      "TAO-USD": "bittensor",         "VET-USD": "vechain",
+    "MNT-USD": "mantle",           "FET-USD": "fetch-ai",          "LDO-USD": "lido-dao",
+    "TONCOIN-USD": "toncoin",      "AR-USD": "arweave",            "INJ-USD": "injective-protocol",
+    "GRT-USD": "the-graph",        "BTCB-USD": "bitcoin-bep2",     "USDC-USD": "usd-coin",
+    "SUI-USD": "sui",              "BGB-USD": "bitget-token",      "XTZ-USD": "tezos",
+    "MUBARAK-USD": "mubarakcoin",
 }
-
 TICKER_OPTIONS = sorted(COINGECKO_MAP.keys())
 
 # ════════════════════════════════════════════════
