@@ -380,13 +380,17 @@ with st.spinner("Mengambil data historis dari CoinGecko…"):
         st.error(str(e))
         st.stop()
 
-# Harga penutupan terbaru
+# Harga terkini sebagai titik awal simulasi (data hari ini, bisa intraday)
 current_price = df["Close"].iloc[-1]
-tanggal_terakhir = df.index[-1].strftime("%d %B %Y")
+
+# Harga penutupan kemarin — sudah final, dipakai untuk ditampilkan ke pengguna
+harga_tampil = df["Close"].iloc[-2]
+tanggal_tampil = df.index[-2].strftime("%d %B %Y")
 
 st.write(
-    f"**Harga penutupan {ticker_input} per {tanggal_terakhir}: "
-    f"US${format_angka_indonesia(current_price)}**"
+    f"**Harga penutupan {ticker_input} per {tanggal_tampil}: "
+    f"US${format_angka_indonesia(harga_tampil)}**"
+    f" _(simulasi dimulai dari harga terkini: US${format_angka_indonesia(current_price)})_"
 )
 
 # Random seed deterministik: ticker + tanggal + harga penutupan
