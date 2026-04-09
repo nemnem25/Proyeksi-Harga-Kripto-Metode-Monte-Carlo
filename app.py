@@ -241,28 +241,34 @@ def render_metric_cards(
     med_chg, med_up = pct_chg(median, current_price)
     std_pct = abs(std / current_price * 100)
 
-    med_color  = "#27500A" if med_up else "#791F1F"
-    pct_color  = "#27500A" if chance >= 50 else "#791F1F"
+    # Gunakan st.metric bawaan Streamlit — otomatis support light/dark mode,
+    # tidak perlu hardcode warna sama sekali.
+    col1, col2, col3 = st.columns(3)
 
-    st.markdown(f"""
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:1rem;">
-  <div style="background:var(--background-color,#f8f9fa);border-radius:8px;padding:14px 16px;border:0.5px solid rgba(128,128,128,0.2);">
-    <div style="font-size:12px;color:gray;margin-bottom:4px;">Median geometrik</div>
-    <div style="font-size:18px;font-weight:600;">US${fmt(median)}</div>
-    <div style="font-size:11px;color:{med_color};margin-top:2px;">{med_chg} dari harga kini</div>
-  </div>
-  <div style="background:var(--background-color,#f8f9fa);border-radius:8px;padding:14px 16px;border:0.5px solid rgba(128,128,128,0.2);">
-    <div style="font-size:12px;color:gray;margin-bottom:4px;">Peluang di atas median</div>
-    <div style="font-size:18px;font-weight:600;color:{pct_color};">{pct(chance)}</div>
-    <div style="font-size:11px;color:gray;margin-top:2px;">dari seluruh simulasi</div>
-  </div>
-  <div style="background:var(--background-color,#f8f9fa);border-radius:8px;padding:14px 16px;border:0.5px solid rgba(128,128,128,0.2);">
-    <div style="font-size:12px;color:gray;margin-bottom:4px;">Std deviation</div>
-    <div style="font-size:18px;font-weight:600;">US${fmt(std)}</div>
-    <div style="font-size:11px;color:gray;margin-top:2px;">±{pct(std_pct)} dari harga kini</div>
-  </div>
-</div>
-""", unsafe_allow_html=True)
+    med_delta  = f"{med_chg} dari harga kini"
+    std_delta  = f"±{pct(std_pct)} dari harga kini"
+
+    with col1:
+        st.metric(
+            label="Median geometrik",
+            value=f"US${fmt(median)}",
+            delta=med_delta,
+            delta_color="normal" if med_up else "inverse",
+        )
+    with col2:
+        st.metric(
+            label="Peluang di atas median",
+            value=pct(chance),
+            delta="dari seluruh simulasi",
+            delta_color="off",
+        )
+    with col3:
+        st.metric(
+            label="Std deviation",
+            value=f"US${fmt(std)}",
+            delta=std_delta,
+            delta_color="off",
+        )
 
 # ════════════════════════════════════════════════
 # FITUR 3: SKENARIO BULL / BASE / BEAR
